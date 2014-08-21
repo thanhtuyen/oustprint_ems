@@ -6,7 +6,7 @@
 	<meta name="language" content="en" />
 
     <link rel="stylesheet" type="text/css" href="<?php echo app()->theme->baseUrl; ?>/css/styles.css" />
-    <link rel="shortcut icon" href="<?php echo app()->theme->baseUrl; ?>../../images/ico/title.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="<?php echo app()->theme->baseUrl; ?>/images/ico/title.png" type="image/x-icon" />
 
 	<title><?php echo CHtml::encode($this->pageTitle); ?></title>
 
@@ -19,153 +19,152 @@
 </head>
 
 <body>
-  <div id="pagewrap">
-    <!--<a href="--><?php //echo app()->createUrl('/site/index');?><!--"><img class="img" src="--><?php //echo app()->theme->baseUrl; ?><!--/images/ico/mainnav.png" alt="Image"></a>-->
-    <header id="header">
-      <?php
-      //  $contract_id = getContract();
-        $this->widget('bootstrap.widgets.TbNavbar',array(
-          'items'=>array(
-              array(
-                  'class'=>'bootstrap.widgets.TbMenu',
-                  'items'=>array(
-                    array(
-                      'label'=>'Dasboard',
-                      'url'=>array('/Site/Index')
-                    ),
-                    array(
-                      'label'=>'Profile',
-                      'url'=>array('/Employee/Admin'),
-                      'visible'=>(app()->user->getState('roles') =='admin' || app()->user->getState('roles') =='manager' || app()->user->getState('roles') =='leader')
-                    ),
-                    array(
-                      'label'=>'Profile',
-                      'url'=>array('/Employee/view/'. app()->user->id),
-                      'visible'=>( app()->user->getState('roles') =='user')
-                    ),
-                    array(
-                      'label'=>'Contract',
-                      'url'=>array('/Contract/index/34'),
-                      'visible'=>(app()->user->getState('roles') =='admin' || app()->user->getState('roles') =='manager' )
-                    ),
-                    array(
-                      'label'=>'Contract',
-      //                'url'=>array('/Contract/view/'.$contract_id),
-                      'visible'=>(app()->user->getState('roles') =='leader' ||  app()->user->getState('roles') =='user')
-                    ),
-                     array(
-                      'label'=>'Vacation',
-                      'url'=>array('/Vacation/Admin'),
 
-                    ),
-                    array(
-                      'label'=>'Department',
-                      'url'=>array('/Department/admin'),
-      //                'visible'=>(app()->user->getState('roles') =="admin" || app()->user->getState('roles') =='manager' || app()->user->getState('roles') =='leader')
-                    ),
-                    array(
-                      'label'=>'Admin',
-                      'url'=>array('/User/Admin'),
-                      'visible'=>(app()->user->getState('roles') =='admin' || app()->user->getState('roles') =='manager' || app()->user->getState('roles') =='leader' )
-                    ),
-                    array(
-                      'label'=>'Quick Message',
-                      'url'=>array('/Message/create'),
-      //                'visible'=>(app()->user->getState('roles') =="admin" || app()->user->getState('roles') =='manager' || app()->user->getState('roles') =='leader')
-                    ),
-                    array(
-                      'label'=>'Logs',
-                      'url'=>array('/activitylog/admin'),
-                      'visible'=>(app()->user->getState('roles') =="admin" || app()->user->getState('roles') =='manager')
-                    ),
-                  ),
+<a href="<?php echo app()->createUrl('/site/index');?>"><img class="img" src="<?php echo app()->theme->baseUrl; ?>/images/ico/mainnav.png" alt="Image"></a>
+<?php
+  $contract_id = getContract();
+  $this->widget('bootstrap.widgets.TbNavbar',array(
+    'items'=>array(
+        array(
+            'class'=>'bootstrap.widgets.TbMenu',
+            'items'=>array(
+              array(
+                'label'=>'Dasboard',
+                'url'=>array('/Site/Index')
               ),
               array(
-                  'class'=>'bootstrap.widgets.TbMenu',
-                  'htmlOptions'=>array('class'=>'pull-right'),
-                  'items'=>array(
-                      //array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>webapp()->user->isGuest),
-                      array('label'=>'Welcome  '.app()->user->getState('fullName').' ['.app()->user->getState('roles').']', 'url'=>'#', 'items'=>array(
-                          array('label'=>'My Accounting', 'url'=>array('/User/view/'.app()->user->id)),
-                          array('label'=>'Change Password', 'url'=>array('/User/Changepassword/'.app()->user->id)),
-                          array('label'=>'Logout', 'url'=>array('/Site/Logout'), 'visible'=>!app()->user->isGuest)
-                      )),
-                  ),
+                'label'=>'Profile',
+                'url'=>array('/Employee/Admin'),
+                'visible'=>(app()->user->getState('roles') =='admin' || app()->user->getState('roles') =='manager' || app()->user->getState('roles') =='leader')
               ),
-          ),
-      )); ?>
-    </div>
-    <div class="container">
+              array(
+                'label'=>'Profile',
+                'url'=>array('/Employee/view/'. app()->user->id),
+                'visible'=>( app()->user->getState('roles') =='user')
+              ),
+              array(
+                'label'=>'Contract',
+                'url'=>array('/Contract/index/34'),
+                'visible'=>(app()->user->getState('roles') =='admin' || app()->user->getState('roles') =='manager' )
+              ),
+              array(
+                'label'=>'Contract',
+                'url'=>array('/Contract/view/'.$contract_id),
+                'visible'=>(app()->user->getState('roles') =='leader' ||  app()->user->getState('roles') =='user')
+              ),
+               array(
+                'label'=>'Vacation',
+                'url'=>array('/Vacation/Admin'),
 
-      <?php if(isset($this->breadcrumbs)):?>
-        <?php $this->widget('bootstrap.widgets.TbBreadcrumbs', array(
-          'links'=>$this->breadcrumbs,
-        ));
-        ?><!-- breadcrumbs -->
-      <?php endif?>
+              ),
+              array(
+                'label'=>'Department',
+                'url'=>array('/Department/admin'),
+//                'visible'=>(app()->user->getState('roles') =="admin" || app()->user->getState('roles') =='manager' || app()->user->getState('roles') =='leader')
+              ),
+              array(
+                'label'=>'Admin',
+                'url'=>array('/User/Admin'),
+                'visible'=>(app()->user->getState('roles') =='admin' || app()->user->getState('roles') =='manager' || app()->user->getState('roles') =='leader' )
+              ),
+              array(
+                'label'=>'Quick Message',
+                'url'=>array('/Message/create'),
+//                'visible'=>(app()->user->getState('roles') =="admin" || app()->user->getState('roles') =='manager' || app()->user->getState('roles') =='leader')
+              ),
+              array(
+                'label'=>'Logs',
+                'url'=>array('/activitylog/admin'),
+                'visible'=>(app()->user->getState('roles') =="admin" || app()->user->getState('roles') =='manager')
+              ),
+            ),
+        ),
+        array(
+            'class'=>'bootstrap.widgets.TbMenu',
+            'htmlOptions'=>array('class'=>'pull-right'),
+            'items'=>array(
+                //array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>webapp()->user->isGuest),
+                array('label'=>'Welcome  '.app()->user->getState('fullName').' ['.app()->user->getState('roles').']', 'url'=>'#', 'items'=>array(
+                    array('label'=>'My Accounting', 'url'=>array('/User/view/'.app()->user->id)),
+                    array('label'=>'Change Password', 'url'=>array('/User/Changepassword/'.app()->user->id)),
+                    array('label'=>'Logout', 'url'=>array('/Site/Logout'), 'visible'=>!app()->user->isGuest)
+                )),
+            ),
+        ),
+    ),
+)); ?>
 
-      <?php echo $content; ?>
+<div class="container">
 
-      <div class="clear"></div>
+	<?php if(isset($this->breadcrumbs)):?>
+		<?php $this->widget('bootstrap.widgets.TbBreadcrumbs', array(
+			'links'=>$this->breadcrumbs,
+		));
+		?><!-- breadcrumbs -->
+	<?php endif?>
 
-    </div><!-- page -->
-  <hr>
-  <div id="footer">
+	<?php echo $content; ?>
 
-    <div id="distance2">
-      <div id="block-bottom" style="margin-top: 2em;">
-        <div class="wrapper">
-          <div class="grid-block" id="toolbar">
-            <div class="float-left">
+	<div class="clear"></div>
 
-              <div class="module  deepest">
-                <ul class="bottom_left">
-                  <li class="databases">
-                    <a title="" target="_blank" href="http://www.hcmutrans.edu.vn/" class="mootip">
-                      <strong style="float: left">Ho Chi Minh City University of Transport</strong>
-                    </a>
-                  </li>
-                  <li class="messages">
-                    <a title="" target="_blank" href="http://www.hcmutrans.edu.vn/khoa/cntt/Web/index.php" class="mootip">
-                      <strong style="float: left">IT science</strong>
-                    </a>
-                  </li>
-                  <li class="options">
-                    <a title="" target="_blank" href="http://www.facebook.com/groups/CN11LT.dhgtvt/" class="mootip">
-                      <strong style="float: left">CN11LT</strong>
-                    </a>
-                  </li>
-                </ul>
-              </div>
+    <hr>
+    <div id="footer">
+
+        <div id="distance2">
+            <div id="block-bottom" style="margin-top: 2em;">
+                <div class="wrapper">
+                    <div class="grid-block" id="toolbar">
+                        <div class="float-left">
+
+                            <div class="module  deepest">
+                                <ul class="bottom_left">
+                                    <li class="databases">
+                                        <a title="" target="_blank" href="http://www.hcmutrans.edu.vn/" class="mootip">
+                                            <strong style="float: left">Ho Chi Minh City University of Transport</strong>
+                                        </a>
+                                    </li>
+                                    <li class="messages">
+                                        <a title="" target="_blank" href="http://www.hcmutrans.edu.vn/khoa/cntt/Web/index.php" class="mootip">
+                                            <strong style="float: left">IT science</strong>
+                                        </a>
+                                    </li>
+                                    <li class="options">
+                                        <a title="" target="_blank" href="http://www.facebook.com/groups/CN11LT.dhgtvt/" class="mootip">
+                                            <strong style="float: left">CN11LT</strong>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="float-right">
+                            <div class="module  deepest">
+                                <ul class="bottom_right">
+                                    <li class="users">
+                                        <a title="" href="#" style="text-decoration: none" class="mootip">
+                                            <strong>EMS</strong>
+                                        </a>
+                                    </li>
+                                    <li class="right_info">
+                                        Graduate Project
+                                    </li>
+                                    <li class="right_info">
+                                        Employee Management System
+                                    </li>
+                                    <li class="right_info">
+                                        version: v1.5
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="float-right">
-              <div class="module  deepest">
-                <ul class="bottom_right">
-                  <li class="users">
-                    <a title="" href="#" style="text-decoration: none" class="mootip">
-                      <strong>EMS</strong>
-                    </a>
-                  </li>
-                  <li class="right_info">
-                    Graduate Project
-                  </li>
-                  <li class="right_info">
-                    Employee Management System
-                  </li>
-                  <li class="right_info">
-                    version: v1.5
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
 
-  </div><!-- footer -->
+	</div><!-- footer -->
 
-  </div><!-- pagewrap -->
+</div><!-- page -->
+
 </body>
 
 <script type="text/javascript">

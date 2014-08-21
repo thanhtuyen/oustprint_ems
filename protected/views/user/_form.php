@@ -1,121 +1,111 @@
-<?php 
-Yii::app()->clientScript->registerCoreScript('jquery');  
-Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl."/js/jquery.validate.min.js");
+<?php
+/* @var $this UserController */
+/* @var $model User */
+/* @var $form CActiveForm */
 ?>
-	
-	<?php $form=$this->beginWidget('CActiveForm', array(
-		'id'=>'user-form',
-		'enableAjaxValidation'=>true,
-		'htmlOptions'=> array('class'=>'ajaxValid,form'),
-		
-	)); ?>
-	<fieldset style="margin: 0 auto; width: 470px; border-radius: 4px; border: solid thick whiteSmoke; padding: 20px; border-top: 0;">
-		 
-		<?php if($model->isNewRecord):?>  
-			<div class="" style="clear:both;float: left;"> 
-				<span class="mod_title" style="float: left;"> 
-					<?php echo $form->textField($model,'user_username',array('style'=>'width:100%','placeholder'=>'Username')); ?>
-				</span>
-				<span class="help_inline" style="float: left;">
-					<?php echo $form->error($model,'user_username'); ?>
-				</span>
-			</div>
-		
-		<?php else:?>  
-			<div class="" style="clear:both;float: left;">  
-				<span class="mod_title"> 
-					<?php echo $model->user_username; ?>
-				</span>
-			</div>		
-		<?php endif; ?>
-		
-			
-			<div class="" style="clear:both;float: left;"> 
-				<span class="mod_title" style="float: left;"> 
-					<?php echo $form->textField($model,'user_first_name',array('style'=>'width:100%','placeholder'=>'First Name')); ?>
-				</span>
-				<span class="help_inline" style="float: left;">
-					<?php echo $form->error($model,'user_first_name'); ?>
-				</span>
-			</div>
-			
-			<div class="" style="clear:both;float: left;"> 
-				<span class="mod_title" style="float: left;"> 
-					<?php echo $form->textField($model,'user_last_name',array('style'=>'width:100%','placeholder'=>'Last Name')); ?>
-				</span>
-				<span class="help_inline" style="float: left;">
-					<?php echo $form->error($model,'user_last_name'); ?>
-				</span>
-			</div>
-			
-			
-			<div class="" style="clear:both; float: left;"> 
-				<span class="mod_title" style="float: left;"> 
-					<?php echo $form->textField($model,'user_full_name',array('style'=>'width:100%','placeholder'=>'Full Name')); ?>
-				</span>
-				<span class="help_inline" style="float: left;">
-					<?php echo $form->error($model,'user_full_name'); ?>
-				</span>
-			</div>
-			
-			<div class="" style="clear:both; float: left;"> 
-				<span class="mod_title" style="float: left;"> 
-					<?php echo $form->textField($model,'user_email',array('style'=>'width:100%','placeholder'=>'Email')); ?>
-				</span>
-				<span class="help_inline" style="float: left;">
-					<?php echo $form->error($model,'user_email'); ?>
-				</span>
-			</div>
-			
-	
-		 <?php if($model->isNewRecord):?>		
-			<div class="" style="clear:both; float: left;"> 
-				<span class="mod_title" style="float: left;">
-					<?php echo $form->passwordField($model,'user_password',array('style'=>'width:100%','placeholder'=>'Password', 'value'=>'')); ?>
-				</span>
-				<span class="help_inline" style="float: left;">
-					<?php echo $form->error($model,'user_password'); ?>
-				</span>
-			</div>
-			<div class="" style="clear:both; float: left;"> 
-				<span class="mod_title" style="float: left;">
-					<?php echo $form->passwordField($model,'user_password_repeat',array('style'=>'width:100%','placeholder'=>'Repeat Password')); ?>
-				</span>
-				<span class="help_inline" style="float: left;">
-					<?php echo $form->error($model,'user_password_repeat'); ?>
-				</span>
-			</div>			
-		<?php endif;?>
-		
-			<div class="" style="clear:both; float: left;">
-				<h3 id="help_title" style="float: left; padding: 2px 6px; border-radius: 4px; border: solid thin whiteSmoke; background: whiteSmoke; color: #99999B;">
-					<?php //echo $form->error($model,'user_role'); ?>
-					<?php echo "ROLE"; ?>
-				</h3>
-				<span class="mod_title" style="float: left;"> 
-					<?php echo $form->dropDownList($model,'user_role',$roles); ?>	
-				</span>
-			</div>
-		 	
-		<div class="" style="clear:both; float: right;">
-			<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save',array('class'=>'submit')); ?>
-		</div>
-			
-	</fieldset>
-	
-	<?php $this->endWidget(); ?>
-	
-<!-- form -->
-<script type="text/javascript">
-$().ready(function() {
-	// validate signup form on keyup and submit
-	$("#user-form").validate({
-		rules: {
-			'User[user_password_repeat]': {
-				
-			}
-		}
-	});
-	
-});
-</script>
+
+  <?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
+    'id'=>'user-form',
+    'type'=>'horizontal',
+    'enableAjaxValidation'=>false,
+  )); ?>
+  <p class="help-block">Fields with <span class="required">*</span> are required.</p>
+<?php //echo $form->errorSummary($model); ?>
+<?php //echo $form->errorSummary($employeemodel); ?>
+    <div class="space5">
+      <?php echo $form->textFieldRow($model,'firstname',array('class'=>'span3','maxlength'=>255)); ?>
+
+      <?php echo $form->textFieldRow($model,'lastname',array('class'=>'span3','maxlength'=>255)); ?>
+
+      <?php echo $form->textFieldRow($model,'fullname',array('class'=>'span3','maxlength'=>255)); ?>
+
+      <?php echo $form->textFieldRow($model,'email',array('class'=>'span3','maxlength'=>255)); ?>
+
+      <?php if($model->isNewRecord):?>
+      <?php echo $form->dropDownListRow($employeemodel,'department_id', Employee::getDepartmentOption(),array(
+        'empty' => array("Please select Department"),
+        'onchange' => CHtml::ajax(array(
+                'type' => 'POST',
+                'url' => CController::createUrl('User/Department'),
+                'update' => '#'.CHtml::activeId($employeemodel, 'job_title'),
+            )
+        ),
+      )); ?>
+      <?php echo $form->dropDownListRow($employeemodel,'job_title',Employee::getDepartmentList($employeemodel->department_id), array('empty'=>"Please select Job Title", 'class' => 'span3')); ?>
+      <?php endif; ?>
+      <?php echo $form->dropDownListRow($model,'roles', $roles,array('empty'=>"Please select role", 'class'=>'span3','maxlength'=>255))
+      ; ?>
+        <div class="control-group">
+        <?php if($model->isNewRecord):?>
+            <?php echo $form->labelEx($model,'dob', array('class'=> "control-label required")); ?>
+          <div class="controls">
+            <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+              'model'=>$model,
+              'attribute'=>'dob',
+              // additional javascript options for the date picker plugin
+              'options'=>array(
+                'showAnim'=>'fold',
+                'dateFormat'=>'M-dd-yy',
+                'changeYear'=>'true',
+                'changeMonth'=>'true',
+                'yearRange'=>'c-100:c+100'
+              ),
+              'htmlOptions'=>array(
+                'style'=>'height:20px;',
+                'value' => '',
+              ),
+            ));
+            ?>
+            <?php echo $form->error($model,'dob'); ?>
+          </div>
+        <?php else: ?>
+          <?php echo $form->labelEx($model,'dob', array('class'=> "control-label required")); ?>
+          <div class="controls">
+            <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+              'model'=>$model,
+              'attribute'=>'dob',
+              // additional javascript options for the date picker plugin
+              'options'=>array(
+                'showAnim'=>'fold',
+                'dateFormat'=>'M-dd-yy',
+                'changeYear'=>'true',
+                'changeMonth'=>'true',
+                'yearRange'=>'c-100:c+100'
+              ),
+              'htmlOptions'=>array(
+                'style'=>'height:20px;',
+                'value' => date('M-d-Y',$model->dob),
+              ),
+            ));
+            ?>
+            <?php echo $form->error($model,'dob'); ?>
+          </div>
+        <?php endif; ?>
+        </div>
+
+      <div class="form-actions">
+        <?php $this->widget('bootstrap.widgets.TbButton', array(
+        'buttonType'=>'submit',
+        'type'=>'primary',
+        'label'=>$model->isNewRecord ? 'Create' : 'Save',
+      ));
+
+        if($model->isNewRecord){
+          $this->widget('bootstrap.widgets.TbButton', array(
+            'buttonType'=>'reset',
+            'htmlOptions'=>array('style'=>'margin-left: 10px;'),
+            'label'=>'Reset',
+          ));
+        } else {
+          $this->widget('bootstrap.widgets.TbButton', array(
+            //'buttonType'=>'link',
+            'label'=>'Cancel',
+            'htmlOptions'=>array('style'=>'margin-left: 10px;'),
+            'url'=>'../../User/Admin',
+          ));
+        }
+        ?>
+      </div>
+    </div>
+  <?php $this->endWidget(); ?>
+

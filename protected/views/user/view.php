@@ -1,69 +1,101 @@
-<?php if(Yii::app()->user->hasFlash('changedPassword')): ?>
-<div class="msg success">
-    <h3 class="yes_info">
-		<?php echo Yii::app()->user->getFlash('changedPassword'); ?>
-	</h3>
-</div>
-<?php endif; ?>
-<?php if(!$model->profile->user_id): ?>
-<button style="float: right;"><a href="<?php print Yii::app()->createUrl('/user/update', array('id'=>$model->user_id));?>">Update User Info</a></button>
-<button style="float: right;"><a href="<?php print Yii::app()->createUrl('/profile/create', array('id'=>$model->user_id));?>">New Profile for User</a></button>
-<?php else: ?>
-<button style="float: right;"><a href="<?php print Yii::app()->createUrl('/user/update', array('id'=>$model->user_id));?>">Update User Info</a></button>
-<button style="float: right;"><a href="<?php print Yii::app()->createUrl('/profile/view', array('id'=>$model->user_id));?>">View User Profile</a></button>
-<button style="float: right;"><a href="<?php print Yii::app()->createUrl('/profile/update', array('id'=>$model->user_id));?>">Update User Profile</a></button>
-<?php endif; ?>
+<style type="text/css">
+  A:link {text-decoration: none}
+  A:visited {text-decoration: none}
+  A:active {text-decoration: none}
+  A:hover {text-decoration: none;}
+</style>
+<?php
+/* @var $this UserController */
+/* @var $model User */
 
-<h3 class="title" style="text-align: left;"><?php echo $model->getFullName(); ?></h3>
-<h3 class="flash_info" style="text-align: left;">[User <?php echo $model->getStatusName(); ?>]</h3>
+$this->breadcrumbs=array(
+	'Users'=>array('index'),
+	$model->id,
+);
 
-<?php 
-    date_default_timezone_set($model->user_timezone);
+// $this->menu=array(
+// 	array('label'=>'List User', 'url'=>array('index')),
+// 	array('label'=>'Create User', 'url'=>array('create')),
+// 	array('label'=>'Update User', 'url'=>array('update', 'id'=>$model->id)),
+// 	array('label'=>'Delete User', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+// 	array('label'=>'Manage User', 'url'=>array('admin')),
+// );
 ?>
+<p>
+  <div>
+  <?php
 
-<?php if(Yii::app()->user->hasFlash('warn_status')):?>
-	<h3 class="warn_info">
-        <?php echo Yii::app()->user->getFlash('warn_status'); ?>
-    </h3>
-<?php endif; ?>
+  if(app()->user->hasFlash('error')){
+    echo app()->user->getFlash('error');
+  } elseif(app()->user->hasFlash('warning')){
+    echo app()->user->getFlash('warning');
+  } elseif(app()->user->hasFlash('info')){
+    echo app()->user->getFlash('info');
+  } elseif(app()->user->hasFlash('success')){
+    echo '<div class="alert alert-success">'.app()->user->getFlash('success').'</div>';
+  }elseif(app()->user->hasFlash('changedPassword')) {
+    echo '<div class="alert alert-success">'.app()->user->getFlash('changedPassword').'</div>';
+  }
+  ?>
+  </div>
+    <?php
+    $this->widget('bootstrap.widgets.TbAlert', array(
+      'block'=>true, // display a larger alert block?
+      'fade'=>true, // use transitions?
+      'closeText'=>'×', // close link text - if set to false, no close link is displayed
+      'alerts'=>array( // configurations per alert type
+        'success'=>array('block'=>true, 'fade'=>true, 'closeText'=>'×'), // success, info, warning, error or danger
+        'info'=>array('block'=>true, 'fade'=>true, 'closeText'=>'×'),
+        'warning'=>array('block'=>true, 'fade'=>true, 'closeText'=>'×'),
+        'error'=>array('block'=>true, 'fade'=>true, 'closeText'=>'×'),
+      ),
+    ));
+    ?>
+  </p>
+  	<div class = "view_user">
+      <button style="float: right; margin-right: 5px;""><a onclick="history.go(-1);">Cancel</a></button>
+      <?php if(Yii::app()->user->getState('roles') =="admin" || (Yii::app()->user->getState('roles') =="manager" )):?>
+      <button style="float: right; margin-right: 5px;"><a href="<?php print Yii::app()->createUrl('/user/update', array('id'=>$model->id));?>">Update User</a></button>
+      <?php endif;?>
+      <?php if(Yii::app()->user->getState('roles') =="leader" || Yii::app()->user->getState('roles') =="user"):?>
+        <button style="float: right; margin-right: 5px;"><a href="<?php print Yii::app()->createUrl('/employee/update', array('id'=>$model->id));?>">Update Profile</a></button>
+      <?php endif;?>
+      <h3 class="title" ><?php echo $model->fullname; ?></h3>
 
-<?php $this->widget('zii.widgets.CDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-        'user_username',
-		'user_first_name',
-		'user_last_name',
-		'user_full_name',
-		'user_email',
-	 	/*array('label' => $model->company->getAttributeLabel('company_name'),
-			  'value' => $model->company->company_name
-		),*/
-		array('label' => $model->getAttributeLabel('role'),
-			  'value' => $model->getRoleName()
-		),
-		//'user_active',
-		array('label' => $model->getAttributeLabel('user_active'),
-			  'value' => $model->getStatusName()
-		),
-		array('name'=>'user_created_date',
-		      'value'=>$model->getCreatedDate()
-		)
-	),
-)); ?>
+      <?php $this->widget('bootstrap.widgets.TbDetailView',array(
+        'data'=>$model,
+        'attributes'=>array(
+        'firstname',
+        'lastname',
+          'fullname',
+      	'email',
+        array('name' => 'dob',
+          'value' => $model->dob? date('M-d-Y',$model->dob):''),
+      	'lastvisit',
+      	'created_date',
+         array('name' => 'updated_date',
+               'value' => $model->updated_date? date('M-d-Y',$model->updated_date):''),
 
-<div class="active_user">
-<?php 
-	if($model->user_active==1)		//	active
-	{
-		//print_r($model->getUserRole(Yii::app()->user->id));exit;		
-		if(($model->getUserRole(Yii::app()->user->id))<>"user")		//	co quyen manager
-			echo CHtml::button('Deactive User', array('submit' => array('user/deactive','id'=>$model->user_id)));			
-	}
-	if($model->user_active==0)		//	deactive
-	{	
-		if(($model->getUserRole(Yii::app()->user->id))<>"user")		//	co quyen manager
-			echo CHtml::button('Active User', array('submit' => array('user/active','id'=>$model->user_id)));	
-	}	
-	
-?>
-</div>
+    	),
+  		)); ?>
+	    </br>
+      <?php
+      if(Yii::app()->user->getState('roles') =="admin" || (Yii::app()->user->getState('roles') =="manager" )):
+      if($model->status == 1) {
+        $this->widget('bootstrap.widgets.TbButton',array(
+          'label' => 'Deactive User',
+          //'type' => 'danger',
+          'size' => 'small',
+          'url'  => array('user/deactive','id'=>$model->id),
+        ));
+      } else {
+        $this->widget('bootstrap.widgets.TbButton',array(
+          'label' => 'Active User',
+          //'type' => 'danger',
+          'size' => 'small',
+          'url'  => array('user/active','id'=>$model->id),
+        ));
+      }
+      endif;
+      ?>
+	  </div>

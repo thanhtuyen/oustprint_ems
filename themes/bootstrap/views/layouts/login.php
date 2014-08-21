@@ -61,13 +61,13 @@
                                         </a>
                                     </li>
                                     <li class="right_info">
-                                        Graduate Project
+                                        Graduate Internship Project
                                     </li>
                                     <li class="right_info">
                                         Employee Management System
                                     </li>
                                     <li class="right_info">
-                                        version: v1.5
+                                        version: v1.0
                                     </li>
                                 </ul>
                             </div>

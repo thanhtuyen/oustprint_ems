@@ -1,99 +1,17 @@
-
-/************************************************************************************
-smaller than 980
-*************************************************************************************/
-@media screen and (max-width: 980px) {
-  /* pagewrap */
-  #pagewrap {
-    width: 95%;
-  }
-  .navbar-fixed-top {
-    position: static;
-  }
-  .navbar {
-    width: 60% ;
-    margin: 3% auto;
-  }
-
-  .container {
-    width: 95%;
-  }
-  /* content */
-  #content {
-    width: 60%;
-    padding: 3% 4%;
-  }
+.navbar-fixed-top {
+    position: static !important;
 }
-/************************************************************************************
-smaller than 650
-*************************************************************************************/
-@media screen and (max-width: 650px) {
-  .navbar-fixed-top {
-    position: static;
-  }
-  .navbar {
-    width: auto;
-    margin: 10px auto;
-  }
-
-  .container {
-    width: auto;
-  }
-  /* content */
-  #content {
-    width: auto;
-    float: none;
-    margin: 20px 0;
-  }
-  #header {
-    height: auto;
-  }
-  /* header */
-  .navbar {
-    height: auto;
-  }
-  .pull-right{
-    color: red;
-    position: absolute;
-    top: 5px;
-    right: 0;
-    z-index: 100;
-    height: 40px;
-  }
-  /* search form */
-  #searchform {
-    position: absolute;
-    top: 5px;
-    right: 0;
-    z-index: 100;
-    height: 40px;
-  }
-  #searchform #s {
-    width: 70px;
-  }
-  #searchform #s:focus {
-    width: 150px;
-  }
+.navbar {
+    width: 1024px !important;
+    margin: 10px auto !important;
 }
-/************************************************************************************
-smaller than 560
-*************************************************************************************/
-@media screen and (max-width: 480px) {
 
-  /* disable webkit text size adjust (for iPhone) */
-  html {
-    -webkit-text-size-adjust: none;
-  }
-
-  /* main nav */
-  #main-nav a {
-    font-size: 90%;
-    padding: 10px 8px;
-  }
-
+.container {
+    width: 1024px !important;
 }
+
 .container ul li.active a {
-    color: #40c9f5 ;
+    color: #40c9f5 !important;
 }
 
 .img {

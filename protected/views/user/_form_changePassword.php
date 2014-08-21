@@ -13,65 +13,65 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl."/js/jquery.val
 	
 	<?php if($_GET['status'] != 'changedPassword'):?>
 	
-	<fieldset style="margin: 0 auto; width: 250px; border-radius: 4px; border: solid thick whiteSmoke; padding: 20px; border-top: 0;">
+	<fieldset style="margin: 0 auto; width: 50%;  padding: 20px; border-top: 0;">
 
 		<?php if(Yii::app()->user->hasFlash('wrongPassword')): ?>
-		<h3 class="warn_info">
+    <h3 class="warn_info">
 			<?php echo Yii::app()->user->getFlash('wrongPassword'); ?>
-		</h3>
+    </h3>
 		<?php endif; ?>
-		
-		<?php if(Yii::app()->user->hasFlash('changedPassword')): ?>
-		<h3 class="yes_info">
-			<?php echo Yii::app()->user->getFlash('changedPassword'); ?>
-		</h3>
-		<?php endif; ?>
-	 
+
+		<?php if(Yii::app()->user->hasFlash('changedPassword')):?>
+      <h3 class="yes_info">
+			  <?php echo Yii::app()->user->getFlash('changedPassword');?>
+      </h3>
+    <?php endif; ?>
+
 		<h3 class="title">Change User Password</h3>
-		
-		<div class="" style="clear:both;float: left;"> 
-			<span class="mod_title" style="float: left;"> 
-				[<?php echo $model->user_username; ?>]
-				<?php echo $model->getUserFullName(); ?>
-			</span> 
+
+		<div class="" style="clear:both;float: left;">
+			<span class="mod_title" style="float: left;">
+				[<?php echo $model->email; ?>]
+				<?php echo $model->getFullName(); ?>
+			</span>
 		</div>
 		<div class="" style="clear:both;float: left;">&nbsp;</div>
-		
-		<div class="" style="clear:both;float: left;"> 
-			<span class="mod_title" style="float: left;"> 
-				<?php echo $form->passwordField($model,'user_old_password',array('style'=>'width:100%','placeholder'=>'Old Password')); ?>
+
+		<div class="" style="clear:both;float: left;">
+			<span class="mod_title" style="float: left;">
+				<?php echo $form->passwordField($model,'old_password',array('placeholder'=>'Old Password')); ?>
 			</span>
 			<span class="help_inline" style="float: left;">
-				<?php echo $form->error($model,'user_old_password'); ?>
+				<?php echo $form->error($model,'old_password'); ?>
 			</span>
 		</div>
-		
-		<div class="" style="clear:both;float: left;"> 
-			<span class="mod_title" style="float: left;"> 
-				<?php echo $form->passwordField($model,'user_password',array('style'=>'width:100%','placeholder'=>'New Password','value'=>'')); ?>
+
+		<div class="" style="clear:both;float: left;">
+			<span class="mod_title" style="float: left;">
+				<?php echo $form->passwordField($model,'password',array('placeholder'=>'New Password','value'=>'')); ?>
 			</span>
 			<span class="help_inline" style="float: left;">
-				<?php echo $form->error($model,'user_password'); ?>
+				<?php echo $form->error($model,'password'); ?>
 			</span>
 		</div>
-		
-		<div class="" style="clear:both;float: left;"> 
-			<span class="mod_title" style="float: left;"> 
-				<?php echo $form->passwordField($model,'user_password_repeat',array('style'=>'width:100%','placeholder'=>'Confirm Password')); ?>
+
+		<div class="" style="clear:both;float: left;">
+			<span class="mod_title" style="float: left;">
+				<?php echo $form->passwordField($model,'password_repeat',array('placeholder'=>'Confirm Password')); ?>
 			</span>
 			<span class="help_inline" style="float: left;">
-				<?php echo $form->error($model,'user_password_repeat'); ?>
+				<?php echo $form->error($model,'password_repeat'); ?>
 			</span>
 		</div>
-		
-		<div class="" style="clear:both; float: right;">
+
+		<div class="" style="clear:both; ">
 			<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save',array('class'=>'submit')); ?>
-		</div> 
-		
+		</div>
+
 	</fieldset>
-	
+
 	<?php endif; ?>
-	
+
 	<?php if($_GET['status'] === 'changedPassword'):?>
 		<label>Your new password is saved</label>
 	<?php endif; ?>
@@ -84,15 +84,15 @@ $().ready(function() {
 	// validate signup form on keyup and submit
 	$("#user-form").validate({
 		rules: {
-			'User[user_password]': {
+			'User[password]': {
 				required: true
 			},
-			'User[user_old_password]': {
+			'User[old_password]': {
                 required: true
             },
-			'User[user_password_repeat]': {
+			'User[password_repeat]': {
 				required: true,
-				equalTo: "#User_user_password"
+				equalTo: "#User_password"
 			}
 		}
 	});

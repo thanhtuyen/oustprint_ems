@@ -1,198 +1,148 @@
-<div class="form">
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'vacation-form',
-	'enableAjaxValidation'=>false,	
-)); ?>
-<?php date_default_timezone_set('Asia/Saigon'); ?> 
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'user_id'); ?>
-		<?php
+<?php  
+  $cs = Yii::app()->getClientScript();
+ // $cs->registerScriptFile('/js/yourscript.js', CClientScript::POS_END);
+  $cs->registerCssFile('/css/vacation.css');
+?>
+<?php
+/* @var $this VacationController */
+/* @var $model Vacation */
+/* @var $form CActiveForm */
+?>
+<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
+	'id'=>'vacation-form',
+  	'type'=>'horizontal',
+	'enableAjaxValidation'=>false,
+)); ?>
+<p class="help-block">Fields with <span class="required">*</span> are required.</p>
+<p>Total remaining vation: <?php
+  if($employee_vacation){
+    echo $employee_vacation->remaining_vacation;
+  } else {
+    echo "12";
+  }
+ ?></p>
+	<?php //echo $form->errorSummary($model); ?>
+	<div class="space5">
+		<?php 
+
 			if($model->isNewRecord)
-				echo $user->getUserFullName()." <span class=\"you\">YOU</span>"; 
+				echo app()->user->getState('fullName')." <span class=\"you\">YOU</span>"; 
 			else
 			{
-				if(($model->user_id)==($user->user_id))
-					echo $user->getUserFullName()." <span class=\"you\">YOU</span>"; 
+				if(($model->user_id)==(app()->user->id))
+					echo app()->user->getState('fullName')." <span class=\"you\">YOU</span>"; 
 				else
 					echo "You're editing the other's vacation";
 			}
 		?>
-		<?php //echo $form->error($model,'user_id'); ?>
-	</div>
-	
-	<div class="row">
-		<?php echo $form->labelEx($model,'request_day'); ?>
-		<?php //echo $form->textField($model,'request_day'); ?>
-		<?php echo ($model->isNewRecord ? date('m-d-Y') : date('m-d-Y', $model->request_day)); ?>
-		<?php
-			/*$this->widget('zii.widgets.jui.CJuiDatePicker', array(
-				'model'=>$model,
-				'attribute'=>'request_day',
-			    // additional javascript options for the date picker plugin
-			    'options'=>array(
-			        'showAnim'=>'false',
-					'changeMonth'=>'true',
-					'changeYear'=>'true',
-					'dateFormat'=>'mm-dd-yy',
-			    ),
-			    'htmlOptions'=>array(
-			        'style'=>'height:20px;',
-			    	'value'=>($model->isNewRecord ? date('m-d-Y') : date('m-d-Y', $model->request_day)),						
-					'readonly'=>'readonly'
-			    ),
-			)); 
-		*/?>
-		<?php echo $form->error($model,'request_day'); ?>
-	</div>
-	
-	<div class="row">
-		<?php echo $form->labelEx($model,'start_day'); ?>
-		<?php //echo $form->textField($model,'start_day'); ?>
-		<?php
-			$this->widget('zii.widgets.jui.CJuiDatePicker', array(
-				'model'=>$model,
-				'attribute'=>'start_day',
-			    // additional javascript options for the date picker plugin
-			    'options'=>array(
-			        'showAnim'=>'fold',
-					'changeMonth'=>'true',
-					'changeYear'=>'true',
-					'dateFormat'=>'mm-dd-yy',
-			        'yearRange'=>'c-1:c+1', 
-			    ),
-			    'htmlOptions'=>array(
-			        'style'=>'height:20px;',
-			    	'value'=>($model->isNewRecord ? date('m-d-Y') : date('m-d-Y', $model->start_day)),
-			    ),
-			)); 
-		?>
-		<?php echo $form->error($model,'start_day'); ?>
-		
-	</div>
-	
-	<div class="row">
-        <?php echo $form->labelEx($model, 'time'); ?>
- 		<br>
-            <div class="compactRadioGroup">
-            <?php
-                echo $form->radioButtonList($model, 'time',
-                    array(  
-                            'am' => 'Morning',
-                            'pm' => 'Afternoon' ) );
-            ?>
-            </div>
-            <?php echo $form->error($model, 'time'); ?>
+		<div class="control-group">
+		Request_date:<span style="margin-left:20px;"><?php echo date('m-d-Y');?></span>
+		</div>
+		<div class="control-group">
+	    	<?php if($model->isNewRecord):?>
+		      	<?php echo $form->labelEx($model,'start_date', array('class'=> "control-label required")); ?>
+		    	<div class="controls">
+		      		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+		              'model'=>$model,
+		              'attribute'=>'start_date',
+		              // additional javascript options for the date picker plugin
+		              'options'=>array(
+		                  'showAnim'=>'fold',
+                      'dateFormat'=>'mm-dd-yy',
+		                  'changeYear'=>'true',
+		                  'changeMonth'=>'true',
+		                  'yearRange'=>'c-100:c+100',
+
+		              ),
+		              'htmlOptions'=>array(
+		                  'style'=>'height:20px;',
+		                  'value' =>  date('m-d-Y'),
+		              ),
+		          	));
+		      	  	?>
+		      		<?php echo $form->error($model,'start_date'); ?>
+		    	</div>
+		   	<?php else: ?>
+		    	<?php echo $form->labelEx($model,'start_date', array('class'=> "control-label required")); ?>
+		    	<div class="controls">
+		      		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+		              'model'=>$model,
+		              'attribute'=>'start_date',
+		              // additional javascript options for the date picker plugin
+		              'options'=>array(
+		                  'showAnim'=>'fold',
+                      'dateFormat'=>'mm-dd-yy',
+		                  'changeYear'=>'true',
+		                  'changeMonth'=>'true',
+		                  'yearRange'=>'c-100:c+100'
+		              ),
+		              'htmlOptions'=>array(
+		                  'style'=>'height:20px;',
+		                  'value' => date('m-d-Y',$model->start_date),
+		              ),
+		          	));
+		          	?>
+		      		<?php echo $form->error($model,'start_date'); ?>
+		    	</div>
+		    <?php endif; ?>
+	  	</div>
+
+		<?php echo $form->radioButtonListInlineRow($model, 'time', array('am' => 'Morning', 'pm' => 'Afternoon')); ?>
+    <?php echo $form->dropDownListRow($model,'type', Vacation::getReasonArr(),array(
+      'empty' => array("Type"),
+      'onchange' => CHtml::ajax(array(
+          'type' => 'POST',
+          'url' => CController::createUrl('Vacation/total'),
+          'update' => '#'.CHtml::activeId($model, 'total'),
+        )
+      ),
+    )); ?>
+    <div style="margin-bottom: 10px; display: none" class="control_group add_note">
+    <span style="margin-right: 20px">Medical Certificate</span>
+      <?php echo $form->checkBox($model, 'medical_certificate'); ?>
     </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'reason'); ?>
-		<?php echo $form->dropDownList($model,'reason', Vacation::getReasonArr(),array(
-			'empty' => array("Type"),
-			'onchange' => CHtml::ajax(array(
-                    'type' => 'POST',
-                    'url' => CController::createUrl('Vacation/total'),
-                    'update' => '#'.CHtml::activeId($model, 'total'),
-				)
-			),
-		)); ?>
-		<?php echo $form->error($model,'reason'); ?>
+
+		<?php echo $form->dropDownListRow($model,'total',Vacation::gettotalsarr($model->type), array('class' => 'span2')); ?>
+    <?php echo $form->dropDownListRow($model, 'approve_id', User::getListUserSearch(), array('class' => 'span2'));?>
+		<?php echo $form->ckEditorRow($model, 'reason', array('class'=>'span3', 'type' => 'raw'));?>
+
+		<div class="form-actions">
+    	<?php $this->widget('bootstrap.widgets.TbButton', array(
+    	'buttonType'=>'submit',
+    	'type'=>'primary',
+    	'label'=>$model->isNewRecord ? 'Create' : 'Save',
+		));
+
+    	if($model->isNewRecord){
+        	$this->widget('bootstrap.widgets.TbButton', array(
+            'buttonType'=>'reset',
+            'htmlOptions'=>array('style'=>'margin-left: 10px;'),
+            'label'=>'Reset',
+        	));
+    	} else {
+        $this->widget('bootstrap.widgets.TbButton', array(
+            //'buttonType'=>'link',
+            'label'=>'Cancel',
+            'htmlOptions'=>array('style'=>'margin-left: 10px;'),
+            'url'=>'../../Vacation/Admin',
+        ));
+    	}
+    	?>
 	</div>
-   
-	<div class="row">
-		<?php echo $form->labelEx($model,'total'); ?>
-		<?php echo $form->dropDownList($model,'total',Vacation::gettotalsarr($model->reason)); ?>
-		<?php echo $form->error($model,'total'); ?>
 	</div>
 
-<?php /*
-	<div class="row">
-		<?php echo $form->labelEx($model,'end_day'); ?>
-		<?php //echo $form->textField($model,'end_day'); ?>
-		<?php
-			$this->widget('zii.widgets.jui.CJuiDatePicker', array(
-				'model'=>$model,
-				'attribute'=>'end_day',
-			    // additional javascript options for the date picker plugin
-			    'options'=>array(
-			        'showAnim'=>'fold',
-					'changeMonth'=>'true',
-					'changeYear'=>'true',
-					'dateFormat'=>'mm-dd-yy',
-                    'yearRange'=>'c-1:c+1' 
-			    ),
-			    'htmlOptions'=>array(
-			        'style'=>'height:20px;',
-			    	'value'=>($model->isNewRecord ? '' : date('m-d-Y', $model->end_day)),
-			    ),
-			)); 
-		?>
-		<?php echo $form->error($model,'end_day'); ?>
-	</div>
-*/ ?>
-
-	<div style="clear:left; float: left;">
-		<?php echo $form->labelEx($model,'more_reason'); ?>
-	</div>
-	<div style="clear:left; float: left; margin-left: 200px;" class="row">
-		<?php 
-			$this->widget('application.extensions.ckkceditor.editor.CKkceditor',
-				array(
-					"model"=>$model,                # Data-Model
-					"attribute"=>'more_reason',         # Attribute in the Data-Model
-					"height"=>'200px', 
-					"config"=>array(
-						//'toolbar' => 'Basic', 
-						'toolbar' => array(
-							//array('Styles','Format','Font','FontSize'),
-							array('Bold','Italic','Underline','Strike','-','TextColor','BGColor'), 
-							array('-','NumberedList','BulletedList'),
-							array('-','Outdent','Indent','Blockquote'),
-							array('-','Undo','Redo','-','Link','Unlink'),
-							array('-','Table','SpecialChar',),
-							array('JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'),
-							array('-','Maximize',),
-						),
-						'format_p' => array(
-							'element' => 'p',
-							'attributes' => null,
-						),
-						'ignoreEmptyParagraph' => true,
-						'font_style' => array(
-							'element' => null,
-						),
-					
-					),					
-					"filespath"=>(!$model->isNewRecord)?Yii::app()->basePath."/../media/paquetes/"."more_reason"."/":"",
-					"filesurl"=>(!$model->isNewRecord)?Yii::app()->baseUrl."/media/paquetes/"."more_reason"."/":"",
-				)
-			);
-		?> 
-		<?php echo $form->error($model,'more_reason'); ?>
-	</div>
-	
-	 
-	
-	<div style="clear:left; float: left;" class="row buttons">
-		<?php 
-			if($model->isNewRecord)
-			{
-				echo CHtml::submitButton('Create');
-		 		echo CHtml::resetButton('Reset');
-			}
-			else
-			{
-				echo CHtml::submitButton('Update');
-			} 
-		?>
-	</div>
-
-<?php $this->endWidget(); ?>
-
-</div><!-- form -->
-
-<!-- Javascript  check defaul  time in create vacation, (da fix in action create of vacationcontroller) 
-<script type="text/javascript">
-	$("#Vacation_time_0").attr("checked", "checked");
+<?php  $this->endWidget();?>
+<script language="javascript">
+  $(document).ready(function() {
+    $("#Vacation_type").change(function(){
+      if($(this).val() == 2) {
+        $('.add_note').show();
+      } else {
+        $('.add_note').hide();
+      }
+    });
+    $('#Vacation_type').trigger('change');
+  });
 </script>
--->

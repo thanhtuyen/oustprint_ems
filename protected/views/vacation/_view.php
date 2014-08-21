@@ -1,41 +1,55 @@
+<?php
+/* @var $this VacationController */
+/* @var $data Vacation */
+?>
+
 <div class="view">
-<!--	
-	<b><?php echo CHtml::encode($data->getAttributeLabel('vacation_id')); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->vacation_id), array('view', 'id'=>$data->vacation_id)); ?>
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
+	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
 	<br />
--->	
-	
-	<b><?php echo CHtml::encode($data->getAttributeLabel('user_id')); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->user->getUserFullName()), array('view', 'id'=>$data->vacation_id)); ?>
-	<?php //echo CHtml::encode($data->user->getUserFullName()); ?>
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('start_date')); ?>:</b>
+	<?php echo CHtml::encode($data->start_date); ?>
 	<br />
-	
-	<b><?php echo CHtml::encode($data->getAttributeLabel('request_day')); ?>:</b>
-	<?php echo CHtml::encode($data->getrequestDay()); ?>
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('end_date')); ?>:</b>
+	<?php echo CHtml::encode($data->end_date); ?>
 	<br />
-	
-	<b><?php echo CHtml::encode($data->getAttributeLabel('total')); ?>:</b>
-	<?php echo CHtml::encode($data->total); ?>
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('total_date')); ?>:</b>
+	<?php echo CHtml::encode($data->total_date); ?>
+	<br />
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('type')); ?>:</b>
+	<?php echo CHtml::encode($data->type); ?>
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('reason')); ?>:</b>
-	<?php echo CHtml::encode($data->getReasonName()); ?>
-	<br />
-	
-	<b><?php echo CHtml::encode($data->getAttributeLabel('start_day')); ?>:</b>
-	<?php echo CHtml::encode($data->getStartDay()); ?>
+	<?php echo CHtml::encode($data->reason); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('end_day')); ?>:</b>
-	<?php echo CHtml::encode($data->getEndDay()); ?>
+	<b><?php echo CHtml::encode($data->getAttributeLabel('user_id')); ?>:</b>
+	<?php echo CHtml::encode($data->user_id); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('more_reason')); ?>:</b>
-	<?php echo CHtml::encode($data->more_reason); ?>
+	<?php /*
+	<b><?php echo CHtml::encode($data->getAttributeLabel('approve_id')); ?>:</b>
+	<?php echo CHtml::encode($data->approve_id); ?>
 	<br />
-	
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('created_date')); ?>:</b>
+	<?php echo CHtml::encode($data->created_date); ?>
+	<br />
+
 	<b><?php echo CHtml::encode($data->getAttributeLabel('status')); ?>:</b>
-	<?php echo CHtml::encode($data->getStatusName()); ?>
-	<br />	
-	
+	<?php echo CHtml::encode($data->status); ?>
+	<br />
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('updated_date')); ?>:</b>
+	<?php echo CHtml::encode($data->updated_date); ?>
+	<br />
+
+	*/ ?>
+
 </div>

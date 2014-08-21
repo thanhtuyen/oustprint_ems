@@ -21,27 +21,34 @@ class SiteController extends Controller
 		);
 	}
 
-
-  public function actionIndex()
-  {
-    Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
-  }
-  public function actionAdmin()
-  {
-    Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
-  }
-  public function actionCreate()
-  {
-    Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
-  }
-  public function actionView()
-  {
-    Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
-  }
-  public function actionUpdate()
-  {
-    Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
-  }
+	/**
+	 * This is the default 'index' action that is invoked
+	 * when an action is not explicitly requested by users.
+	 */
+    public function actionIndex()
+    {
+        if(Yii::app()->user->id) {
+            Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
+        }else{
+            $this->redirect(CController::CreateUrl('/site/login'));
+        }
+    }
+    public function actionAdmin()
+    {
+        Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
+    }
+    public function actionCreate()
+    {
+        Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
+    }
+    public function actionView()
+    {
+        Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
+    }
+    public function actionUpdate()
+    {
+        Yii::app()->request->redirect(Yii::app()->createUrl('/dashboard'));
+    }
 	/**
 	 * This is the action to handle external exceptions.
 	 */
@@ -82,74 +89,70 @@ class SiteController extends Controller
 		$this->render('contact',array('model'=>$model));
 	}
 
-  /**
-   * Displays the login page
-   */
-  public function actionLogin()
-  {
-    $this->layout="login";
-    if(Yii::app()->request->isAjaxRequest){
-      throw new CHttpException(500,'Permission denied');
-    }
+	/**
+	 * Displays the login page
+	 */
+	public function actionLogin()
+	{
+		$this->layout="login";
+		$model=new LoginForm;
     if(Yii::app()->user->id) {
-      $this->redirect('index');
+        $this->render('index');
     }
-    $model=new LoginForm;
+		// if it is ajax validation request
+		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
+		{
+			echo CActiveForm::validate($model);
+			Yii::app()->end();
+		}
 
-    // if it is ajax validation request
-    if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
-    {
-      echo CActiveForm::validate($model);
-      Yii::app()->end();
-    }
+		// collect user input data
+		if(isset($_POST['LoginForm']))
+		{
+			$model->attributes=$_POST['LoginForm'];
+			// validate user input and redirect to the previous page if valid
+			if($model->validate() && $model->login()) {
+				//write log system
+				$logs = new ActivityLog;
+				if(isset($logs))
+				{
+					$logs->activity_date = time();
+					$logs->user_id = Yii::app()->user->id;
+					$logs->action_id = Yii::app()->user->id;	// 	User ID
+					$logs->action_group = 'user';				// 	User Group
+					$logs->activity_type = 1;
+					$logs->ip_logged = Yii::app()->request->userHostAddress;					//	Log in
+					$logs->save();
+				}  
 
-    // collect user input data
-    if(isset($_POST['LoginForm']))
-    {
-      $model->attributes=$_POST['LoginForm'];
-      // validate user input and redirect to the previous page if valid
-      if($model->validate() && $model->login())
-      {
-//        $logs = new ActivityLog;
-//        if(isset($logs))
-//        {
-//          $logs->activity_date = time();
-//          $logs->user_id = Yii::app()->user->id;
-//          $logs->action_id = Yii::app()->user->id;	// 	User ID
-//          $logs->action_group = 'user';				// 	User Group
-//          $logs->activity_type = 1;					//	Log in
-//          $logs->save();
-//        }
-        $this->redirect(Yii::app()->user->returnUrl);
-//        Yii::app()->request->redirect(Yii::app()->createUrl('/Vacation'));echo 111;die;
-      }
-    }
-    // display the login form
-    $this->render('login',array('model'=>$model));
-  }
+				$this->redirect(Yii::app()->user->returnUrl); 
+			}
 
-  /**
-   * Logs out the current user and redirect to homepage.
-   */
-  public function actionLogout()
-  {
+				
+		}
+		// display the login form
+		$this->render('login',array('model'=>$model));
+	}
 
-    //print_r(Yii::app()->createUrl()); exit;
-    //print_r(Yii::app()->createUrl('site/login')); exit;
-    //print_r(Yii::app()->request->getBaseUrl()); exit;
-    $logs = new ActivityLog;
-
-    if(isset($logs))
-    {
-      $logs->activity_date = time();
-      $logs->user_id = Yii::app()->user->id;
-      $logs->action_id = Yii::app()->user->id;	// 	User ID
-      $logs->action_group = 'user';				// 	User Group
-      $logs->activity_type = 2;					//	Log out
-      $logs->save();
-    }
-    Yii::app()->user->logout();
-    $this->redirect(Yii::app()->createUrl('site/login'));
-
-  }
+	/**
+	 * Logs out the current user and redirect to homepage.
+	 */
+	public function actionLogout()
+	{
+		$logs = new ActivityLog;
+        if(isset($logs))
+        {
+        
+            $logs->activity_date = time();
+            $logs->user_id = Yii::app()->user->id;
+			$logs->action_id = Yii::app()->user->id;	// 	User ID
+			$logs->action_group = 'user';				// 	User Group
+			$logs->activity_type = 2;//	Log out 
+			$logs->ip_logged = Yii::app()->request->userHostAddress;
+            $logs->save();
+           
+        }
+		Yii::app()->user->logout();	
+		$this->redirect(Yii::app()->homeUrl);
+	}
 }

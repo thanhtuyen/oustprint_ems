@@ -7,54 +7,60 @@
  */
 class UserIdentity extends CUserIdentity
 {
-  private $_id;
-  const ERROR_STATUS_NOTACTIV=3;
-  /**
-   * Authenticates a user using the User data model.
-   * @return boolean whether authentication succeeds.
-   */
-  public function authenticate()
-  {
-    $user = User::model()->findByAttributes(array('email'=>$this->username, 'status'=>1));
+    private $_id;
+    const ERROR_EMAIL_INVALID=3;
+    const ERROR_STATUS_NOTACTIV=4;
+    const ERROR_STATUS_BAN=5;
+	/**
+	 * Authenticates a user.
+	 * The example implementation makes sure if the username and password
+	 * are both 'demo'.
+	 * In practical applications, this should be changed to authenticate
+	 * against some persistent user identity storage (e.g. database).
+	 * @return boolean whether authentication succeeds.
+	 */
+	public function authenticate()
+	{
+        $users = User::model()->findByAttributes(array('email'=>$this->username));
+       
+        if($users == null) {
+            $this->errorCode=self::ERROR_USERNAME_INVALID;
+        } elseif( $users->password !== md5($this->password)) {
+            $this->errorCode=self::ERROR_PASSWORD_INVALID;
+        } else if ($users->status == 0){
+            $this->errorCode=self::ERROR_STATUS_NOTACTIV;
+        } else if ($users->status == 2) {
+            $this->errorCode=self::ERROR_STATUS_BAN;
+        } else {
+            $this->_id = $users->id;
+            if(null === $users->lastvisit) {
+                $lastLogin = time();
+            } else {
+                $lastLogin = strtotime($users->lastvisit);
+            }
 
-    if($user===null)
+            $this->setState('lastLoginTime', $lastLogin); 
+            $this->setState('fullName', $users->getFullName());
+            //$this->setState('jobFunction', $users->getJobFunction());
+            //get role user login
+            $this->setState('roles', $users->getUserRole($users->id));
+           // $this->setState('departement_id', $employee->department_id);
+            // $this->setState('loginAs', $users->getRoleOfUser()); 
+            // date_default_timezone_set($users->user_timezone);
+            $this->setState('dateFormat', Yii::app()->params['dateFormat']);
+            $this->setState('pageSize', Yii::app()->params['pageSize']);
+            $this->errorCode=self::ERROR_NONE;
+           
+        }
+
+		return !$this->errorCode;
+	}
+
+    /**
+     * @return integer the ID of the user record
+     */
+    public function getId()
     {
-      $this->errorCode=self::ERROR_USERNAME_INVALID;
+        return $this->_id;
     }
-    else
-    {
-      if($user->password!==$user->encrypt($this->password))
-      {
-        $this->errorCode=self::ERROR_PASSWORD_INVALID;
-      }
-      else
-      {
-        $this->_id = $user->id;
-//        if(null === $user->lastvisit)
-//        {
-//          $lastLogin = time();
-//        }
-//        else
-//        {
-//          $lastLogin = strtotime($user->lastvisit);
-//        }
-//        $this->setState('lastLoginTime', $lastLogin);
-        //$this->setState('fullName', $user->getFullName());
-       // $this->setState('jobFunction', $user->getJobFunction());
-        /*$company = Company::model()->findByPk($user->user_company);
-        $this->setState('companyName', $company->company_name);*/
-//        $this->setState('role', $user->getRoleOfUser());
-//        $this->setState('loginAs', $user->getRoleOfUser());
-//        date_default_timezone_set($user->user_timezone);
-//        $this->setState('dateFormat', Yii::app()->params['dateFormat']);
-//        $this->setState('pageSize', Yii::app()->params['pageSize']);
-        $this->errorCode=self::ERROR_NONE;
-      }
-    }
-    return !$this->errorCode;
-  }
-  public function getId()
-  {
-    return $this->_id;
-  }
 }

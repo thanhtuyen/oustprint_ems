@@ -4,17 +4,28 @@
  * This is the model class for table "vacation".
  *
  * The followings are the available columns in table 'vacation':
- * @property integer $vacation_id
- * @property integer $start_day
- * @property integer $end_day
- * @property decimal $total
+ * @property string $id
+ * @property integer $start_date
+ * @property integer $end_date
+ * @property string $total
+ * @property integer $type
+ * @property integer $medical_certificate
+ * @property integer $flag
  * @property string $reason
- * @property string $more_reason
  * @property string $user_id
+ * @property string $approve_id
+ * @property integer $created_date
+ * @property integer $status
+ * @property integer $updated_date
+ * @property integer $time
  * @property integer $request_day
- *
+ * @property integer $comment_one
+ * @property integer $comment_two
+ * @property integer $comment_three
+ * @property integer $comment_four
  * The followings are the available model relations:
- * @property VvUser $user
+ * @property Employee $user
+ * @property Employee $approve
  */
 class Vacation extends CActiveRecord
 {
@@ -26,22 +37,24 @@ class Vacation extends CActiveRecord
 	
 	const STATUS_WAITING=1;			//	Waiting
 	const STATUS_REQUEST_CANCEL=2;	//	Request Cancel
-	const STATUS_ACCEPT=3;			//	Accept
-	const STATUS_CANCEL=4;			// 	Cancel
-	const STATUS_DECLINE=5;			// 	Decline
-	
+	const STATUS_CANCEL=3;			//	Cancel
+	const STATUS_DECLINE=4;			// 	Decline
+	const STATUS_IN_PROGRESS=5;			// 	in_progress
+	const STATUS_RESOLVED=6;			// 	resolved
+	const STATUS_COLSED=7;			// 	closed
+
 	const AM = 'am';
-    const PM = 'pm';
-	
-    public $days;
-    public $re_day;
-	public $re_month;
-	public $re_year;
-	public $st_day;
-	public $st_month;
-	public $st_year;
+  const PM = 'pm';
+  public $days;
+  public $re_day;
+  public $re_month;
+  public $re_year;
+  public $st_day;
+  public $st_month;
+  public $st_year;
 	/**
 	 * Returns the static model of the specified AR class.
+	 * @param string $className active record class name.
 	 * @return Vacation the static model class
 	 */
 	public static function model($className=__CLASS__)
@@ -65,21 +78,17 @@ class Vacation extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('start_day, total, reason', 'required'),
-			array('reason', 'in', 'range'=>array(self::REASON_VACATION,self::REASON_ILLNESS,self::REASON_WEDDING,self::REASON_BEREAVEMENT,self::REASON_MATERNITY)),
-			array('status', 'in', 'range'=>array(self::STATUS_WAITING,self::STATUS_REQUEST_CANCEL,self::STATUS_ACCEPT, self::STATUS_CANCEL, self::STATUS_DECLINE)),
-			array('start_day, end_day, request_day, reason, status', 'numerical', 'integerOnly'=>true),
+			array('start_date, end_date, total, type, reason, time', 'required'),
+			array('type', 'in', 'range'=>array(self::REASON_VACATION,self::REASON_ILLNESS,self::REASON_WEDDING,self::REASON_BEREAVEMENT,self::REASON_MATERNITY)),
+			array('start_date, end_date, type, created_date, status, updated_date, medical_certificate', 'numerical', 'integerOnly'=>true),
 			array('total', 'numerical', 'min'=>0.25, 'max'=>999.75, 'tooBig'=>'Long Time', 'tooSmall'=>'Invalid Number' ),
-		 
-			array('more_reason', 'length'),
-			array('user_id', 'length', 'max'=>12),
+			array('reason', 'length', 'max'=>2000),
+			array('user_id, approve_id', 'length', 'max'=>11),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('vacation_id, start_day, st_day, st_month, st_year, request_day, re_day, re_month, re_year, end_day, total, reason, user_id, status, time', 'safe', 'on'=>'search'),
-			/*array('start_day','compare','compareAttribute'=>'end_day','operator'=>'<=', 
-              'allowEmpty'=>false , 'message'=>'You entered the end date less than the start date. ','on'=>'create,update'),
-			array('total','compare','compareAttribute'=>'days','operator'=>'<=', 
-              'allowEmpty'=>false , 'message'=>'Your day-off is out of range. ','on'=>'create,update'),*/
+			array('id, start_date, end_date, total, type, reason, medical_certificate, user_id, st_day, st_month, st_year, request_day, re_day, re_month, re_year
+			      , status, updated_date, time, request_day, comment_one, comment_two', 'safe', 'on'=>'search'),
+     // array('vacation_id, start_day, st_day, st_month, st_year, request_day, re_day, re_month, re_year, end_day, total, reason, user_id, status, time', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -91,8 +100,9 @@ class Vacation extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'employee' => array(self::BELONGS_TO, 'Employee', 'user_id'),
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
-			'daysoffquota' => array(self::HAS_MANY, 'DaysOffQuota', 'user_id'),
+			'approve' => array(self::BELONGS_TO, 'Employee', 'approve_id'),
 		);
 	}
 
@@ -102,18 +112,24 @@ class Vacation extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'vacation_id' => 'Vacation',
-			'start_day' => 'From',
-			'end_day' => 'To',
-			'total' => 'Day(s)',
-			'reason' => 'Type',
-			'more_reason' => 'Reason',
+			'id' => 'ID',
+			'start_date' => 'Start Date',
+			'end_date' => 'End Date',
+			'total' => 'Total Date',
+			'type' => 'Type',
+			'medical_certificate' => 'Medical Certificate',
+			'reason' => 'Reason',
 			'user_id' => 'User',
-			'request_day' => 'Request On',
-			'status'=> 'Status',
-			'time'=> 'Time',
-			'comment_one'=>'Comment',
-			'comment_two'=>'Comment',
+			'approve_id' => 'Approve',
+			'created_date' => 'Created Date',
+			'status' => 'Status',
+			'updated_date' => 'Updated Date',
+			'request_day'  => 'Request Date',
+			'time'			=> 'Time',
+			'comment_one'		=> 'Comment',
+			'comment_two'		=> 'Comment',
+			'comment_three'		=> 'Comment',
+			'comment_four'		=> 'Comment',
 		);
 	}
 
@@ -123,312 +139,489 @@ class Vacation extends CActiveRecord
 	 */
 	public function search()
 	{
+    $role = User::getRole();
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
-		// fix date search
-		$id=Yii::app()->user->id;
-		/*$request_start= CDateTimeParser::parse($this->request_day,'MM-dd-yyyy', array('hour'=>0,'minute'=>0, 'second'=>0));
-		$request_end= CDateTimeParser::parse($this->request_day,'MM-dd-yyyy', array('hour'=>23,'minute'=>59, 'second'=>59));
-		$start_start= CDateTimeParser::parse($this->start_day,'MM-dd-yyyy', array('hour'=>0,'minute'=>0, 'second'=>0));
-		$start_end= CDateTimeParser::parse($this->start_day,'MM-dd-yyyy', array('hour'=>23,'minute'=>59, 'second'=>59));
-		$end_start= CDateTimeParser::parse($this->end_day,'MM-dd-yyyy', array('hour'=>0,'minute'=>0, 'second'=>0));
-		$end_end= CDateTimeParser::parse($this->end_day,'MM-dd-yyyy', array('hour'=>23,'minute'=>59, 'second'=>59));		
-		$criteria->compare('t.start_day',CDateTimeParser::parse($this->start_day, 'MM-dd-yyyy'));
-		$criteria->compare('t.end_day',CDateTimeParser::parse($this->end_day, 'MM-dd-yyyy'));		
-		$criteria->compare('t.request_day',CDateTimeParser::parse($this->request_day,'MM-dd-yyyy'));*/
-		
-		// begin code search vacation for user
-		if(!Yii::app()->user->checkAccess("admin")&&!Yii::app()->user->checkAccess("manager"))
-		{
-			$criteria=new CDbCriteria(array(
-			'condition'=>"t.user_id = $id AND t.status!=4",
-			));
-			
-			
-			if($_GET['Vacation']['request_day']!=null)
-				{
-					$criteria->addBetweenCondition('t.request_day', $request_start, $request_end, 'AND');
-				}
-			$criteria->compare('t.reason',$this->reason);
-			if($_GET['Vacation']['start_day']!=null)
-				{
-					$criteria->addBetweenCondition('t.start_day', $start_start, $start_end, 'AND');
-				}
-			if($_GET['Vacation']['end_day']!=null)
-				{
-					$criteria->addBetweenCondition('t.end_day', $end_start, $end_end, 'AND');
-				}
-			$criteria->compare('t.status',$this->status);
-		}
-		// End code search vacation for user
-		
-		// begin code search vacation for Admin/Manager
-		else
-		{
-			$criteria=new CDbCriteria(array(
-			'with'=>array('user'),
-			'condition'=>"t.status!=4",
-			));						
-			
-			// begin code search for Request Day
-			if($this->re_month)
-			{				
-				$criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.request_day), "%m") = :month_re');
-				$criteria->params = array(':month_re'=>$this->re_month);							
-			}
-			if($this->re_day)
-			{				
-				$criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.request_day), "%d") = :day_re');
-				$criteria->params[':day_re'] = $this->re_day;
-			}	
-			if($this->re_year)
-			{
-				$criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.request_day), "%Y") = :year_re');
-				$criteria->params[':year_re'] = $this->re_year;
-				//CVarDumper::dump($this->re_year);
-			}
-			// End code search for Request Day
-			
-			// begin code search for Start Day
-			if($this->st_day)
-			{
-				$criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_day), "%d") = :day_st');
-				$criteria->params[':day_st'] = $this->st_day;
-			}
-			if($this->st_month)
-			{
-				$criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_day), "%m") = :month_st');
-				$criteria->params[':month_st'] = $this->st_month;
-			}
-			if($this->st_year)
-			{
-				$criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_day), "%Y") = :year_st');
-				$criteria->params[':year_st'] = $this->st_year;
-			}
-			// End code search for Start Day
-			$criteria->compare('user.user_full_name',$this->user_id,true);
-			$criteria->compare('t.reason',$this->reason);
-			$criteria->compare('t.status',$this->status);
-			
-			//CVarDumper::dump(DATE_FORMAT(t.request_day, "%d"));
-			//print_r($this->user_id);exit;
-			/*if($this->user_id)
-				{
-					$criteria->compare('t.user_id',$this->user_id);	
-					$criteria->condition = 't.user_id=:id';
-					$criteria->params = array(':id'=>$this->user_id);
-				}
-			
-			if($_GET['Vacation']['request_day']!=null)
-				{
-					$criteria->addBetweenCondition('t.request_day', $request_start, $request_end, 'AND');
-				}
-			$criteria->compare('t.total',$this->total);
-			$criteria->compare('t.reason',$this->reason);
-			if($_GET['Vacation']['start_day']!=null)
-				{
-					$criteria->addBetweenCondition('t.start_day', $start_start, $start_end, 'AND');
-				}
-			if($_GET['Vacation']['end_day']!=null)
-				{
-					$criteria->addBetweenCondition('t.end_day', $end_start, $end_end, 'AND');
-				}
-			*/
-		}
-		// begin code search vacation for user
-		
-		return new CActiveDataProvider($this, array(
+    $criteria=new CDbCriteria;
+    $criteria->with = array('user',  );
+    // begin code search for Request Day
+    if($this->re_month)
+    {
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.request_day), "%m") = :month_re');
+      $criteria->params = array(':month_re'=>$this->re_month);
+    }
+    if($this->re_day)
+    {
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.request_day), "%d") = :day_re');
+      $criteria->params[':day_re'] = $this->re_day;
+    }
+    if($this->re_year)
+    {
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.request_day), "%Y") = :year_re');
+      $criteria->params[':year_re'] = $this->re_year;
+      //CVarDumper::dump($this->re_year);
+    }
+    // End code search for Request Day
+
+    // begin code search for Start Day
+    if($this->st_day)
+    {
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%d") = :day_st');
+      $criteria->params[':day_st'] = $this->st_day;
+
+    }
+    if($this->st_month)
+    {
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%m") = :month_st');
+      $criteria->params[':month_st'] = $this->st_month;
+    }
+    if($this->st_year)
+    {
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%Y") = :year_st');
+      $criteria->params[':year_st'] = $this->st_year;
+    }
+    // End code search for Start Day
+    $criteria->addCondition("t.status != 4");
+    $criteria->compare('user.fullname',$this->user_id,true);
+    $criteria->compare('t.type',$this->type, true);
+    $criteria->addCondition("user.roles >= ".$role);
+
+		$vacation_export =  new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
-			'sort'=>array(
-				'defaultOrder'=>'vacation_id desc',
-		),
-			
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+      'pagination' => false
+
 		));
+
+
+    $vacation =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+
+    ));
+    $_SESSION['vacationAll'] = $vacation_export;
+
+    return $vacation;
+
 	}
-/* ------------ Begin Here ------------*/	
-	
-	/*
-	 * 
-	 */
-	public function beforeValidate()
-	{		
-		//print_r($this->getScenario()); exit;
-		if($this->isNewRecord)
-		{							
-			$sum = $this->total;
-			$startday = CDateTimeParser::parse($this->start_day, 'MM-dd-yyyy');
-			$morning = 27000;
-			$afternoon = 45000;
-						
-			if($sum<1){ 
-				if($this->time=="am")
-				{
-					$startday= $startday+$morning;
-					$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-					$endday = $endday+18000;
-				}
-				elseif($this->time=="pm")
-				{
-					$startday= $startday+$afternoon;
-					$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-					$endday = $endday+12600;
-				}
-			}
-			else
-			{ 
-			
-				if($this->time=="am")
-				{
-					$startday= $startday+$morning;
-					if(($sum/0.5)%2==0)
-					{
-						$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-						$endday = $endday-55800;
-					}
-					elseif(($sum/0.5)%2==1)
-					{
-						$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-						$endday = $endday+18000;
-					}
-					if(date("l",$endday)=="Saturday") $endday = $endday+(2*86400);
-					elseif(date("l",$endday)=="Sunday")$endday = $endday+86400;
-					if(date("m-d",$endday)=="01-01" || date("m-d",$endday)=="09-02")$endday = $endday+86400;
-					if(date("m-d",$endday)=="04-30")$endday = $endday+86400;
-					if(date("m-d",$endday)=="05-01")$endday = $endday+86400;
-				}
-				elseif($this->time=="pm")
-				{
-					$startday= $startday+$afternoon;
-					if(($sum/0.5)%2==0)
-					{
-						$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-						$endday = $endday;
-					}
-					elseif(($sum/0.5)%2==1)
-					{
-						$endday = $this->addDays_one($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-						$endday = $endday+12600;
-					}
-					if(date("l",$endday)=="Saturday") $endday = $endday+(2*86400);
-					elseif(date("l",$endday)=="Sunday")$endday = $endday+86400;
-					if(date("m-d",$endday)=="01-01" || date("m-d",$endday)=="09-02")$endday = $endday+86400;
-					if(date("m-d",$endday)=="04-30")$endday = $endday+86400;
-					if(date("m-d",$endday)=="05-01")$endday = $endday+86400;
-					
-				}
-			}
-			$requestday = CDateTimeParser::parse(date('m-d-Y H:i:s'), 'MM-dd-yyyy HH:mm:ss');	
-			//$this->days = (($endday-$startday)/86400)+1;
-			// set the create date, last updated date and the user doing the creating
-			$this->start_day=$startday;
-			$this->end_day=$endday;
-			$this->request_day=$requestday;	
-		}
-		elseif($this->getScenario()=='edit') 
-		{
-						$sum = $this->total; 
-			$startday = CDateTimeParser::parse($this->start_day, 'MM-dd-yyyy');
-			$morning = 27000;
-			$afternoon = 45000;
-						
-			if($sum<1){ 
-				if($this->time=="am")
-				{
-					$startday= $startday+$morning;
-					$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-					$endday = $endday+18000;
-				}
-				elseif($this->time=="pm")
-				{
-					$startday= $startday+$afternoon;
-					$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-					$endday = $endday+12600;
-				}
-			}
-			else
-			{ 
-			
-				if($this->time=="am")
-				{
-					$startday= $startday+$morning;
-					if(($sum/0.5)%2==0)
-					{
-						$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-						$endday = $endday-55800;
-					}
-					elseif(($sum/0.5)%2==1)
-					{
-						$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-						$endday = $endday+18000;
-					}
-					if(date("l",$endday)=="Saturday") $endday = $endday+(2*86400);
-					elseif(date("l",$endday)=="Sunday")$endday = $endday+86400;
-					if(date("m-d",$endday)=="01-01" || date("m-d",$endday)=="09-02")$endday = $endday+86400;
-					if(date("m-d",$endday)=="04-30")$endday = $endday+86400;
-					if(date("m-d",$endday)=="05-01")$endday = $endday+86400;
-				}
-				elseif($this->time=="pm")
-				{
-					$startday= $startday+$afternoon;
-					if(($sum/0.5)%2==0)
-					{
-						$endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-						$endday = $endday;
-					}
-					elseif(($sum/0.5)%2==1)
-					{
-						$endday = $this->addDays_one($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
-						$endday = $endday+12600;
-					}
-					if(date("l",$endday)=="Saturday") $endday = $endday+(2*86400);
-					elseif(date("l",$endday)=="Sunday")$endday = $endday+86400;
-					if(date("m-d",$endday)=="01-01" || date("m-d",$endday)=="09-02")$endday = $endday+86400;
-					if(date("m-d",$endday)=="04-30")$endday = $endday+86400;
-					if(date("m-d",$endday)=="05-01")$endday = $endday+86400;
-					
-				}
-			}
-			$requestday = CDateTimeParser::parse(date('m-d-Y H:i:s'), 'MM-dd-yyyy HH:mm:ss');	
-			//$this->days = (($endday-$startday)/86400)+1;
-			// set the create date, last updated date and the user doing the creating
-			$this->start_day=$startday;
-			$this->end_day=$endday;
-			$this->request_day=$requestday;
-			//$this->days = (($this->end_day-$this->start_day)/86400)+1;
-			//print_r($this->days); exit;
-		}
-		
-		
-		//print_r($requestday);print_r("-----");print_r($startday);print_r("--------");print_r($endday);exit;
-		//var_dump(date("Y-m-d H:i(worry) a", $endday));die;
-		return parent::beforeValidate();
-	}
-	
-	/*
+
+  /**
+   * Retrieves a list of models based on the current search/filter conditions.
+   * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+   */
+
+    //get list vacation waiting
+  public function search_waiting()
+  {
+    // Warning: Please modify the following code to remove attributes that
+    // should not be searched.
+    $role = User::getRole();
+    $criteria=new CDbCriteria(array(
+      'with'=>array('user'),
+      //'condition'=>"t.status = 1",
+    ));
+    $user_id = app()->user->id;
+      //get list in this month
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%m") = :month_st');
+      $criteria->params[':month_st'] = date('m', strtotime(" now"));
+
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%Y") = :year_st');
+      $criteria->params[':year_st'] = date('Y', strtotime(" now"));
+
+
+      $criteria->compare('t.approve_id',$user_id,true);
+      $criteria->addCondition("t.status  in (1, 5, 6)");
+//      $criteria->compare('t.user_id',$user_id,true);
+
+      $criteria->compare('user.fullname',$this->user_id,true);
+      $criteria->compare('t.type',$this->type, true);
+      $criteria->addCondition("user.roles >= ".$role);
+
+    $vacation_export =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+      'pagination' => false
+
+    ));
+
+
+    $vacation =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+
+    ));
+    $_SESSION['vacationWaiting'] = $vacation_export;
+
+    return $vacation;
+
+  }
+
+  /**
+   * Retrieves a list of models based on the current search/filter conditions.
+   * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+   */
+    //get list vacation accepted
+  public function search_accepted()
+  {
+    // Warning: Please modify the following code to remove attributes that
+    // should not be searched.
+    $role = User::getRole();
+    $criteria=new CDbCriteria(array(
+      'with'=>array('user'),
+      // 'condition'=>"t.status!=4",
+    ));
+
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%m") = :month_st');
+      $criteria->params[':month_st'] = date('m', strtotime(" now"));;
+
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%Y") = :year_st');
+      $criteria->params[':year_st'] = date('Y', strtotime(" now"));
+
+
+      $criteria->addCondition("t.status = 7");
+
+    // End code search for Start Day
+    $criteria->compare('user.fullname',$this->user_id,true);
+    $criteria->compare('t.type',$this->type, true);
+    $criteria->addCondition("user.roles >= ".$role);
+
+    $vacation_export =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+      'pagination' => false
+
+    ));
+
+
+    $vacation =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+
+    ));
+    $_SESSION['vacationCancel'] = $vacation_export;
+
+    return $vacation;
+  }
+  /**
+   * Retrieves a list of models based on the current search/filter conditions.
+   * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+   */
+  public function search_request_cancel()
+  {
+    // Warning: Please modify the following code to remove attributes that
+    // should not be searched.
+    $role = User::getRole();
+    $criteria=new CDbCriteria(array(
+      'with'=>array('user'),
+      //'condition'=>"t.status = 1",
+    ));
+
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%m") = :month_st');
+      $criteria->params[':month_st'] = date('m', strtotime(" now"));
+
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%Y") = :year_st');
+      $criteria->params[':year_st'] = date('Y', strtotime(" now"));
+
+    $criteria->addCondition("t.status = 3");
+    $criteria->compare('user.fullname',$this->user_id,true);
+    $criteria->compare('t.type',$this->type, true);
+    $criteria->addCondition("user.roles >= ".$role);
+    $vacation_export =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+      'pagination' => false
+
+    ));
+
+
+    $vacation =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+
+    ));
+    $_SESSION['vacationAccepted'] = $vacation_export;
+
+    return $vacation;
+  }
+
+  /**
+   * Retrieves a list of models based on the current search/filter conditions.
+   * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+   */
+  public function search_decline()
+  {
+    // Warning: Please modify the following code to remove attributes that
+    // should not be searched.
+    $role = User::getRole();
+    $criteria=new CDbCriteria(array(
+      'with'=>array('user'),
+      //'condition'=>"t.status = 1",
+    ));
+
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%m") = :month_st');
+      $criteria->params[':month_st'] = date('m', strtotime(" now"));
+      $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%Y") = :year_st');
+      $criteria->params[':year_st'] = date('Y', strtotime(" now"));
+
+    $criteria->addCondition("t.status = 4");
+    $criteria->compare('user.fullname',$this->user_id,true);
+    $criteria->compare('t.type',$this->type, true);
+    $criteria->addCondition("user.roles >= ".$role);
+    $vacation_export =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+      'pagination' => false
+
+    ));
+
+
+    $vacation =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+
+    ));
+    $_SESSION['vacationDecline'] = $vacation_export;
+
+    return $vacation;
+  }
+
+  /**
+   * Retrieves a list of models based on the current search/filter conditions.
+   * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+   */
+  public function search_withdraw()
+  {
+    // Warning: Please modify the following code to remove attributes that
+    // should not be searched.
+    $role = User::getRole();
+    $criteria=new CDbCriteria(array(
+      'with'=>array('user'),
+      //'condition'=>"t.status = 1",
+    ));
+
+    $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%m") = :month_st');
+    $criteria->params[':month_st'] = date('m', strtotime(" now"));
+
+    $criteria->addCondition('DATE_FORMAT(FROM_UNIXTIME(t.start_date), "%Y") = :year_st');
+    $criteria->params[':year_st'] = date('Y', strtotime(" now"));
+
+    $criteria->addCondition("t.status = 2");
+    $criteria->compare('user.fullname',$this->user_id,true);
+    $criteria->compare('t.type',$this->type, true);
+    $criteria->addCondition("user.roles >= ".$role);
+    $vacation_export =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+      'pagination' => false
+
+    ));
+
+
+    $vacation =  new CActiveDataProvider($this, array(
+      'criteria'=>$criteria,
+      'sort'=>array(
+        'defaultOrder'=>'t.id desc',
+      ),
+
+    ));
+    $_SESSION['vacationWithdraw'] = $vacation_export;
+
+    return $vacation;
+  }
+  /*
+   *
+   */
+  public function beforeValidate()
+  {
+    date_default_timezone_set('Asia/Saigon');
+    if(($this->getScenario()=='add'))
+    {
+      $sum = $this->total;
+      $startday = CDateTimeParser::parse($this->start_date,'MM-dd-yyyy');
+      $morning = 30600;
+      $afternoon = 46800;
+
+      if($sum<1){
+        if($this->time=="am")
+        {
+          $startday= $startday+$morning;
+          $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+          $endday = $endday+12600;
+        }
+        elseif($this->time=="pm")
+        {
+          $startday= $startday+$afternoon;
+          $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+          $endday = $endday+16200;
+        }
+
+      }  else {
+
+        if($this->time=="am")
+        {
+          $startday= $startday+$morning;
+          if(($sum/0.5)%2==0)
+          {
+            $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+            $endday = $endday-55800;
+          }
+          elseif(($sum/0.5)%2==1)
+          {
+            $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+            $endday = $endday+12600;
+          }
+          if(date("l",$endday)=="Saturday") $endday = $endday+(2*86400);
+          elseif(date("l",$endday)=="Sunday")$endday = $endday+86400;
+          if(date("m-d",$endday)=="01-01" || date("m-d",$endday)=="09-02")$endday = $endday+86400;
+          if(date("m-d",$endday)=="04-30")$endday = $endday+86400;
+          if(date("m-d",$endday)=="05-01")$endday = $endday+86400;
+        } elseif($this->time=="pm") {
+          $startday= $startday+$afternoon;
+          if(($sum/0.5)%2==0)
+          {
+            $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+            $endday = $endday;
+          }
+          elseif(($sum/0.5)%2==1)
+          {
+            $endday = $this->addDays_one($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+            $endday = $endday+12600;
+          }
+          if(date("l",$endday)=="Saturday") $endday = $endday+(2*86400);
+          elseif(date("l",$endday)=="Sunday")$endday = $endday+86400;
+          if(date("m-d",$endday)=="01-01" || date("m-d",$endday)=="09-02")$endday = $endday+86400;
+          if(date("m-d",$endday)=="04-30")$endday = $endday+86400;
+          if(date("m-d",$endday)=="05-01")$endday = $endday+86400;
+
+        }
+      }
+//      $requestday = time();
+    }
+    elseif($this->getScenario()=='edit')
+    {
+      $sum = $this->total;
+      $startday = CDateTimeParser::parse($this->start_date, 'MM-dd-yyyy');
+      $morning = 30600;
+      $afternoon = 46800;
+      if($sum<1){
+        if($this->time=="am")
+        {
+          $startday= $startday+$morning;
+          $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+          $endday = $endday+12600;
+        }
+        elseif($this->time=="pm")
+        {
+          $startday= $startday+$afternoon;
+          $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+          $endday = $endday+16200;
+        }
+      }  else {
+
+        if($this->time=="am")
+        {
+          $startday= $startday+$morning;
+          if(($sum/0.5)%2==0)
+          {
+            $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+            $endday = $endday-55800;
+          }
+          elseif(($sum/0.5)%2==1)
+          {
+            $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+            $endday = $endday+12600;
+          }
+          if(date("l",$endday)=="Saturday") $endday = $endday+(2*86400);
+          elseif(date("l",$endday)=="Sunday")$endday = $endday+86400;
+          if(date("m-d",$endday)=="01-01" || date("m-d",$endday)=="09-02")$endday = $endday+86400;
+          if(date("m-d",$endday)=="04-30")$endday = $endday+86400;
+          if(date("m-d",$endday)=="05-01")$endday = $endday+86400;
+        }
+        elseif($this->time=="pm")
+        {
+          $startday= $startday+$afternoon;
+          if(($sum/0.5)%2==0)
+          {
+            $endday = $this->addDays_two($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+            $endday = $endday;
+          }
+          elseif(($sum/0.5)%2==1)
+          {
+            $endday = $this->addDays_one($startday,$sum,array("Saturday","Sunday"),array("01-01","04-30","05-01","09-02"));
+            $endday = $endday+16200;
+          }
+          if(date("l",$endday)=="Saturday") $endday = $endday+(2*86400);
+          elseif(date("l",$endday)=="Sunday")$endday = $endday+86400;
+          if(date("m-d",$endday)=="01-01" || date("m-d",$endday)=="09-02")$endday = $endday+86400;
+          if(date("m-d",$endday)=="04-30")$endday = $endday+86400;
+          if(date("m-d",$endday)=="05-01")$endday = $endday+86400;
+
+        }
+      }
+    } elseif($this->getScenario()=='apply') {
+      $startday = $this->start_date;
+      $endday = $this->end_date;
+//      $requestday = $this->request_day;
+    }
+    $requestday = time();
+
+    // set the create date, last updated date and the user doing the creating
+    $this->start_date=$startday;
+    $this->end_date=$endday;
+    $this->request_day=$requestday;
+
+    return parent::beforeValidate();
+  }
+/*
 	 * Get start day follow fomat M-d-y
 	 */
 	
-	public function getStartDay()
+	public function getStartDate()
 	{
-		return date('M-d-Y',$this->start_day);
+		return date('M-d-Y',$this->start_date);
 	}
 
 	
 	/*
 	 * converts from date/time to timestamp 
 	 */
-	public function setStartDay($start)
+	public function setStartDate($start)
 	{
-		$this->start_day=CDateTimeParser::parse($start,'MM-dd-yyyy');
+
+		$this->start_date=CDateTimeParser::parse($start, 'MMM-dd-yyyy');
+		return $this->start_date;
+			
 	}
 	
 	/**
 	 * Get End day follow fomat M-d-y
 	 * @return unknown_type
 	 */
-	public function getEndDay()
+	public function getEndDate()
 	{
-		return date('M-d-Y',$this->end_day);
+		return date('M-d-Y',$this->end_date);
 	}
 	
 	/*
@@ -436,7 +629,7 @@ class Vacation extends CActiveRecord
 	 */
 	public function setEndDay($end)
 	{
-		$this->end_day=CDateTimeParser::parse($end,'MM-dd-yyyy');
+		$this->end_date=CDateTimeParser::parse($end,'MM-dd-yyyy');
 	}
 	
 	/**
@@ -459,10 +652,10 @@ class Vacation extends CActiveRecord
 	/*
 	 * 
 	 */
-	public function getMoreReason()
+	public function getReason()
 	{
-		$more_reason = $this->more_reason;
-		return $more_reason;
+		$reason = $this->reason;
+		return $reason;
 	}
 	/**
 	 * Get reason array
@@ -499,10 +692,10 @@ class Vacation extends CActiveRecord
 	 * Convert Reason from Array to string
 	 * @return Name Reason
 	 */
-	public function getReasonName()
+	public function getReasonName($type)
 	{
-		$arr=$this->getReasonArr();
-		return $arr[$this->reason];	
+		$arr=Vacation::getReasonArr();
+		return $arr[$type];	
 	}
 	
 	/*
@@ -522,17 +715,20 @@ class Vacation extends CActiveRecord
 			''=>'All Status',
 			self::STATUS_WAITING 		=> 'Waiting',
 			self::STATUS_REQUEST_CANCEL => 'Requested Cancel',
-			self::STATUS_ACCEPT 		=> 'Accepted',
+			self::STATUS_CANCEL 		=> 'Cancel',
 			self::STATUS_DECLINE 		=> 'Declined',
+			self:: STATUS_IN_PROGRESS    	=> 'In progress',
+			self:: STATUS_RESOLVED    	=> 'Resolved',
+			self:: STATUS_COLSED    	=> 'Closed',
 		);
 	}
 	/*
 	 * Convert Status from Array to string
 	 */
-	public function getStatusName()
+	public function getStatusName($status)
 	{
-		$arr=$this->getStatusArr();
-		return $arr[$this->status];	
+		$arr=Vacation::getStatusArr();
+		return $arr[$status];	
 	}
 
 	/*
@@ -786,19 +982,7 @@ class Vacation extends CActiveRecord
 			}
 			return $list;
 		}
-	/*
-	 * Get List User for Search
-	 */
-		public function getListUserSearch() {
-			$users= User::model()->findAll();	 
-			foreach($users as $row)
-			{					
-				echo "\"".$row['user_full_name']."\", ";
-			}
-			
-			return $row;
-		}
-		 	
+
 	/*
 	 *  Get option time in Vacation (AM or PM)
 	 */
@@ -853,7 +1037,7 @@ class Vacation extends CActiveRecord
 	public function addDays_two($timestamp, $days, $skipdays=array(), $skipdates=array()){ 
 	    // $skipdays: array (Monday-Sunday) eg. array("Saturday","Sunday") 
 	    // $skipdates: array (YYYY-mm-dd) eg. array("2012-05-02","2015-08-01"); 
-	    date_default_timezone_set('Asia/Saigon');
+    date_default_timezone_set('Asia/Saigon');
 		$i = 1;  
 	    while($days >= $i){ 
 	        if(in_array(date("l",$timestamp), $skipdays) || in_array(date("m-d",$timestamp), $skipdates)){ 
@@ -876,16 +1060,52 @@ class Vacation extends CActiveRecord
 		if($day>1) return " days";
 		else return " day";
 	}
-	
-	public function getUserName($id)
-	{
-		$users= User::model()->findByPk($id);
-		//if($this->mod_status==2) //as private
-		{
-	   		return $users->user_full_name;
-		}
-	}
-	
-	
-}
 
+	/*
+	 * Get start day follow fomat M-d-y
+	 */
+	
+	public function getStartDay()
+	{
+		return date('M-d-Y',$this->start_date);
+	}
+  public function getTotalDayByType($user_id, $type, $medical = '')
+  {
+
+    $vacation = Yii::app()->db->createCommand(
+                'SELECT sum(total) as total_day_off
+                 FROM `Vacation`
+                WHERE (flag =0) AND  (status = 7) AND(medical_certificate = '."$medical".')AND (user_id ='."$user_id".')
+                AND type ='."$type"
+                )
+                ->queryRow();
+
+    return $vacation;
+  }
+  public function getTotalDayOff($user_id)
+  {
+    $vacation = Yii::app()->db->createCommand(
+      'SELECT count(v.total)
+      FROM `Vacation` `v`, `employee_vacation` `ev`
+      WHERE (ev.flag =1) AND (v.user_id ='."$user_id".')
+                AND v.type =1'
+    )
+      ->queryRow();
+
+    return $vacation;
+  }
+
+    public function getEmployeeByMaxId($user_id)
+    {
+        $employee_vacation = Yii::app()->db->createCommand()
+            ->select('*')
+            ->where('employee_id=:employee_id', array(':employee_id'=>$user_id))
+            ->andWhere('flag=0')
+            ->from('Employee_vacation')
+            ->order('id desc')
+            ->limit(1)
+            ->queryRow();
+
+        return $employee_vacation['total_day_off'];
+    }
+}

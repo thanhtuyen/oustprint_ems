@@ -14,30 +14,28 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl."/js/jquery.val
 		<h3 class="title">Deactive user</h3>
 		
 		
-		<?php if($model->profile!=null): ?> 
-			<h3 class="yes_info" style="padding: 4px;"> 
-				<?php echo "User is "; ?>
-				<?php echo ($model->profile->user_status==0)?'Working':'Non working'; ?>
-			</h3>  
-		<?php endif; ?>	
+		
 		
 		<div class="" style="clear:both;float: left; text-align: center; width: 100%;"> 		 
-				[<?php echo $model->user_username; ?>]	 
-				<?php echo $model->user_first_name." ".$model->user_last_name; ?>	
+				[<?php echo $model->fullName; ?>]	 
+				
 		</div>
 		
 		<div class="" style="clear:both;float: left; text-align: center; width: 100%;"> 
-				<?php echo $model->user_email; ?>
+				<?php echo $model->email; ?>
 		</div>
 		
 		<div class="" style="clear:both;float: left; text-align: center; width: 100%;"> 
-				<?php echo $model->user_full_name; ?>	
+				<?php echo $model->fullName; ?>	
 		</div>
 		
 		<input type="hidden" name="Deactive" value="true"/>
 		
 		<div class="" style="clear:both; float: right;">
-			<?php echo CHtml::submitButton('Deactive',array('class'=>'submit')); ?>
+
+			<?php
+        echo CHtml::submitButton('Deactive',array('class'=>'submit'));
+      ?>
 		</div> 	 		
 	
 	</fieldset>
