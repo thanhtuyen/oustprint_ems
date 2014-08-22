@@ -396,7 +396,6 @@ class VacationController extends Controller
         if($_POST['Vacation']['comment_two']){
           $model->comment_two=$_POST['Vacation']['comment_two'];
         }
-
       }elseif(Yii::app()->user->getState('roles') == 'leader') {
         $model->setStatus(5);	//	in_progress
         $model->comment_one=$_POST['Vacation']['comment_one'];
