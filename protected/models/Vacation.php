@@ -52,6 +52,7 @@ class Vacation extends CActiveRecord
   public $st_day;
   public $st_month;
   public $st_year;
+  public $comment;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -120,7 +121,7 @@ class Vacation extends CActiveRecord
 			'medical_certificate' => 'Medical Certificate',
 			'reason' => 'Reason',
 			'user_id' => 'User',
-			'approve_id' => 'Approve',
+			'approve_id' => 'Assign',
 			'created_date' => 'Created Date',
 			'status' => 'Status',
 			'updated_date' => 'Updated Date',
@@ -337,7 +338,7 @@ class Vacation extends CActiveRecord
     $criteria->addCondition("t.status = 3");
     $criteria->compare('user.fullname',$this->user_id,true);
     $criteria->compare('t.type',$this->type, true);
-    $criteria->addCondition("user.roles >= ".$role);
+//    $criteria->addCondition("user.roles >= ".$role);
     $vacation_export =  new CActiveDataProvider($this, array(
       'criteria'=>$criteria,
       'sort'=>array(
@@ -580,7 +581,7 @@ class Vacation extends CActiveRecord
 
         }
       }
-    } elseif($this->getScenario()=='apply') {
+    } else {
       $startday = $this->start_date;
       $endday = $this->end_date;
 //      $requestday = $this->request_day;

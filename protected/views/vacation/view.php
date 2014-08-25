@@ -97,7 +97,7 @@ $this->breadcrumbs=array(
 		<?php 
 		if(in_array($model->status, array(Vacation::STATUS_WAITING, Vacation::STATUS_IN_PROGRESS,Vacation::STATUS_RESOLVED)))	//	new vacation awaiting
 		{
-			if(($model->user_id)==(Yii::app()->user->id) and $model->status == 1)		//	dung nguoi
+			if(($model->user_id)==(Yii::app()->user->id) and $model->status == Vacation::STATUS_WAITING)		//	dung nguoi
 			{
 				$this->widget('bootstrap.widgets.TbButton',array(
 															'label' => 'Widthdraw',
@@ -125,7 +125,7 @@ $this->breadcrumbs=array(
 														));	
 			}
 		}
-		if($model->status==6)		//	request cancel from accept
+		if($model->status == Vacation::STATUS_IN_PROGRESS || $model->status == Vacation::STATUS_RESOLVED)		//	request cancel from accept
 		{
 				 
 			$tmp_date = date('m-d-Y');		
@@ -142,28 +142,28 @@ $this->breadcrumbs=array(
 														));	
 			 
 		}	
-		if($model->status==5)		//	cancel from request cancel
-		{
-      if(Yii::app()->user->getState('roles') =='admin'||( (Yii::app()->user->getState('roles') =='manager') &&  $employeeLogin->department_id == $employeeVacation->department_id) ) 		//	co quyen admin/manager
-        //echo CHtml::button('Cancel', array('submit' => array('vacation/cancel','id'=>$model->id)));
-      $this->widget('bootstrap.widgets.TbButton',array(
-        'label' => 'Accepted Cancel',
-        'type' => 'success',
-        'size' => 'small',
-        'url'  => array('vacation/cancel','id'=>$model->id),
-      ));
-			//if(($model->user->getUserRole(Yii::app()->user->id))<>"user")		//	co quyen admin/manager
-			if(Yii::app()->user->getState('roles') =='admin'||( (Yii::app()->user->getState('roles') =='manager') &&  $employeeLogin->department_id == $employeeVacation->department_id) ) 		//	co quyen admin/manager		
-				//echo CHtml::button('Cancel', array('submit' => array('vacation/cancel','id'=>$model->id)));
-			$this->widget('bootstrap.widgets.TbButton',array(
-															'label' => 'Cancel',
-															'type' => 'cancel',
-															'size' => 'small',
-															'url'  => array('vacation/cancel','id'=>$model->id),
-														));
-
-
-    }
+//		if($model->status==5)		//	cancel from request cancel
+//		{
+//      if(Yii::app()->user->getState('roles') =='admin'||( (Yii::app()->user->getState('roles') =='manager') &&  $employeeLogin->department_id == $employeeVacation->department_id) ) 		//	co quyen admin/manager
+//        //echo CHtml::button('Cancel', array('submit' => array('vacation/cancel','id'=>$model->id)));
+//      $this->widget('bootstrap.widgets.TbButton',array(
+//        'label' => 'Accepted Cancel',
+//        'type' => 'success',
+//        'size' => 'small',
+//        'url'  => array('vacation/cancel','id'=>$model->id),
+//      ));
+//			//if(($model->user->getUserRole(Yii::app()->user->id))<>"user")		//	co quyen admin/manager
+//			if(Yii::app()->user->getState('roles') =='admin'||( (Yii::app()->user->getState('roles') =='manager') &&  $employeeLogin->department_id == $employeeVacation->department_id) ) 		//	co quyen admin/manager
+//				//echo CHtml::button('Cancel', array('submit' => array('vacation/cancel','id'=>$model->id)));
+//			$this->widget('bootstrap.widgets.TbButton',array(
+//															'label' => 'Cancel',
+//															'type' => 'cancel',
+//															'size' => 'small',
+//															'url'  => array('vacation/cancel','id'=>$model->id),
+//														));
+//
+//
+//    }
 
 	?>
 	</h3>

@@ -5,8 +5,8 @@
 )); 
  		if(app()->user->hasFlash('updateFail')){
 	      echo app()->user->getFlash('updateFail');
-	    } 
-
+	    }
+date_default_timezone_set('Asia/Saigon');
 ?>
 
 		<?php 

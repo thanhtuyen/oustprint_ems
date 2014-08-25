@@ -318,8 +318,7 @@ class VacationController extends Controller
 	public function actionWithdraw($id) 
 	{
 		$model=$this->loadmodel($id);
-		 
-				
+
 		if(($model->user_id)<>(Yii::app()->user->id))
 		{
 			Yii::app()->user->setFlash("updateFail","You have no permit to withdraw another's vacation");
@@ -330,12 +329,12 @@ class VacationController extends Controller
 			Yii::app()->user->setFlash("updateFail","The vacation is not awaiting. You have no permit to withdraw");
 			$this->redirect(array('admin'));
 		}
-		
+
 		if(isset($_POST['Vacation']))
 		{
-      $model->setScenario('edit');
 			$model->comment_four=$_POST['Vacation']['comment_four'];
-			$model->setStatus(3);	//	withdraw
+			$model->setStatus(3);	//	user send request cancel
+
 			if($model->save())
 			{
 				$logs = new ActivityLog;
@@ -388,17 +387,17 @@ class VacationController extends Controller
 
       if(Yii::app()->user->getState('roles') == 'admin'){
         $model->setStatus(7);	//	closed
-        if($_POST['Vacation']['comment_three']){
-          $model->comment_three=$_POST['Vacation']['comment_three'];
+        if($_POST['Vacation']['comment']){
+          $model->comment_three=$_POST['Vacation']['comment'];
         }
       }elseif(Yii::app()->user->getState('roles') == 'manager') {
         $model->setStatus(6);	//	resolved
-        if($_POST['Vacation']['comment_two']){
-          $model->comment_two=$_POST['Vacation']['comment_two'];
+        if($_POST['Vacation']['comment']){
+          $model->comment_two=$_POST['Vacation']['comment'];
         }
       }elseif(Yii::app()->user->getState('roles') == 'leader') {
         $model->setStatus(5);	//	in_progress
-        $model->comment_one=$_POST['Vacation']['comment_one'];
+        $model->comment_one=$_POST['Vacation']['comment'];
       }
 
 			if($model->save())
@@ -490,17 +489,17 @@ class VacationController extends Controller
   {
     $model=$this->loadmodel($id);
 
-    if(Yii::app()->user->getState('roles') != 'admin' && Yii::app()->user->getState('roles') != 'manager')
+    if(Yii::app()->user->getState('roles') == 'user')
     {
-      Yii::app()->user->setFlash("updateFail","You have no permit to accept the vacation");
+      Yii::app()->user->setFlash("updateFail","You have no permit to cancel the vacation");
       $this->redirect(array('admin'));
     }
-    if(($model->status)<>1)	// not awaiting
+    if(($model->status)==7)	// not awaiting
     {
       Yii::app()->user->setFlash("updateFail","The vacation is not awaiting. You have no permit to accept");
       $this->redirect(array('admin'));
     }
-    $model->setScenario('apply');
+//    $model->setScenario('apply');
     if(isset($_POST['Vacation']))
     {
       $model->comment_one=$_POST['Vacation']['comment_one'];
@@ -535,51 +534,51 @@ class VacationController extends Controller
    * Action cancel a vacation
    * if cancel is successful, the browser will be redirected to the 'view' page.
    */
-  public function actionCancel($id)
-  {
-    $model=$this->loadmodel($id);
-
-
-    if(Yii::app()->user->getState('roles') != 'admin' && Yii::app()->user->getState('roles') != 'manager')
-    {
-      Yii::app()->user->setFlash("updateFail","You have no permit to accept the vacation");
-      $this->redirect(array('admin'));
-    }
-    if(($model->status)<>2)	//	not request cancel
-    {
-      Yii::app()->user->setFlash("updateFail","The vacation is not requested to cancel. You have no permit to cancel");
-      $this->redirect(array('admin'));
-    }
-    $model->setScenario('apply');
-    if(isset($_POST['Vacation']))
-    {
-      $model->comment_three=$_POST['Vacation']['comment_three'];
-      $model->setStatus(4);	//	cancel
-      if($model->save())
-      {
-        $logs = new ActivityLog;
-        if(isset($logs))
-        {
-          $logs->activity_date = time();
-          $logs->user_id = Yii::app()->user->id;
-          $logs->action_id = $id;						// 	Vacation ID
-          $logs->action_group = 'vacation';			// 	Vacation Group
-          $logs->activity_type = 18;					// 	Cancel Vacation
-          $logs->save();
-        }
-
-        $this->redirect(array('view','id'=>$model->id));
-      }
-      else
-      {
-        throw new CHttpException(403,'Error while cancel vacation');
-      }
-    }
-
-    $this->render('cancel',array(
-      'model'=>$this->loadmodel($id),
-    ));
-  }
+//  public function actionCancel($id)
+//  {
+//    $model=$this->loadmodel($id);
+//
+//
+//    if(Yii::app()->user->getState('roles') != 'admin' && Yii::app()->user->getState('roles') != 'manager')
+//    {
+//      Yii::app()->user->setFlash("updateFail","You have no permit to accept the vacation");
+//      $this->redirect(array('admin'));
+//    }
+//    if(($model->status)<>2)	//	not request cancel
+//    {
+//      Yii::app()->user->setFlash("updateFail","The vacation is not requested to cancel. You have no permit to cancel");
+//      $this->redirect(array('admin'));
+//    }
+//    $model->setScenario('apply');
+//    if(isset($_POST['Vacation']))
+//    {
+//      $model->comment_three=$_POST['Vacation']['comment_three'];
+//      $model->setStatus(4);	//	cancel
+//      if($model->save())
+//      {
+//        $logs = new ActivityLog;
+//        if(isset($logs))
+//        {
+//          $logs->activity_date = time();
+//          $logs->user_id = Yii::app()->user->id;
+//          $logs->action_id = $id;						// 	Vacation ID
+//          $logs->action_group = 'vacation';			// 	Vacation Group
+//          $logs->activity_type = 18;					// 	Cancel Vacation
+//          $logs->save();
+//        }
+//
+//        $this->redirect(array('view','id'=>$model->id));
+//      }
+//      else
+//      {
+//        throw new CHttpException(403,'Error while cancel vacation');
+//      }
+//    }
+//
+//    $this->render('cancel',array(
+//      'model'=>$this->loadmodel($id),
+//    ));
+//  }
 
   /*
 	 * Action sent a request cancel vacation accepted
@@ -597,20 +596,20 @@ class VacationController extends Controller
       Yii::app()->user->setFlash("updateFail","You have no permit to request cancel another's vacation");
       $this->redirect(array('admin'));
     }
-    if(($model->status)<>3)	// not accepted
-    {
-      Yii::app()->user->setFlash("updateFail","The vacation is not accepted. You have no permit to request cancel");
-      $this->redirect(array('admin'));
-    }
-    if(($model->status)==3&&($tmp_end_day < $withdraw_date))	// not accepted
+//    if(($model->status)==7)	// not accepted
+//    {
+//      Yii::app()->user->setFlash("updateFail","The vacation is accepted. You have no permit to request cancel");
+//      $this->redirect(array('admin'));
+//    }
+    if($tmp_end_day < $withdraw_date)	// not accepted
     {
       throw new CHttpException(403, 'You are already on days off.');
     }
-    $model->setScenario('apply');
+//    $model->setScenario('apply');
     if(isset($_POST['Vacation']))
     {
       $model->comment_four=$_POST['Vacation']['comment_four'];
-      $model->setStatus(4);	//	request cancel
+      $model->setStatus(3);	//	request cancel
       if($model->save())
       {
 
@@ -627,7 +626,7 @@ class VacationController extends Controller
 
         //write data into employee_vacation
 
-        if($model->type == $model::REASON_VACATION) {
+        if($model->type == $model::STATUS_COLSED) {
           $employee_vacation= EmployeeVacation::model()->findByPk($id);
           $employee_vacation->total_day_off = $employee_vacation->total_day_off -  $model->total;
           $employee_vacation->remaining_vacation = $employee_vacation->remaining_vacation +  $model->total;

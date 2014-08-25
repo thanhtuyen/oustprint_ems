@@ -59,18 +59,21 @@
       ))); ?>
 
       <?php
-          if($model->status == Vacation::STATUS_WAITING && (Yii::app()->user->getState('roles') =='admin'||(Yii::app()->user->id ==$model->approve_id))){
+//          if($model->status == Vacation::STATUS_WAITING && (Yii::app()->user->getState('roles') =='admin'||(Yii::app()->user->id ==$model->approve_id))){
+            if(in_array($model->status,array(Vacation::STATUS_WAITING,Vacation::STATUS_IN_PROGRESS, Vacation::STATUS_RESOLVED)) &&
+              (Yii::app()->user->getState('roles') =='admin'||(Yii::app()->user->id ==$model->approve_id))){
             echo $form->dropDownListRow($model, 'approve_id', User::getListUserSearch(), array('class' => 'span2'));
-            echo $form->textArea($model,'comment_one',array('class'=> 'input_comment','placeholder'=>'Comment'));
-          }elseif($model->status == Vacation::STATUS_IN_PROGRESS && (Yii::app()->user->getState('roles') =='admin'||(Yii::app()->user->id ==$model->approve_id))){
-            echo $form->dropDownListRow($model, 'approve_id', User::getListUserSearch(), array('class' => 'span2'));
-            echo $form->textArea($model,'comment_two',array('class'=> 'input_comment','placeholder'=>'Comment'));
-          } elseif($model->status == Vacation::STATUS_RESOLVED && (Yii::app()->user->getState('roles') =='admin'||(Yii::app()->user->id ==$model->approve_id))){
-            echo $form->dropDownListRow($model, 'approve_id', User::getListUserSearch(), array('class' => 'span2'));
-            echo $form->textArea($model,'comment_three',array('class'=> 'input_comment','placeholder'=>'Comment'));
+            echo $form->textArea($model,'comment',array('class'=> 'input_comment','placeholder'=>'Comment'));
           }
+//            elseif($model->status ==  && (Yii::app()->user->getState('roles') =='admin'||(Yii::app()->user->id ==$model->approve_id))){
+//            echo $form->dropDownListRow($model, 'approve_id', User::getListUserSearch(), array('class' => 'span2'));
+//            echo $form->textArea($model,'comment_two',array('class'=> 'input_comment','placeholder'=>'Comment'));
+//          } elseif($model->status ==  && (Yii::app()->user->getState('roles') =='admin'||(Yii::app()->user->id ==$model->approve_id))){
+//            echo $form->dropDownListRow($model, 'approve_id', User::getListUserSearch(), array('class' => 'span2'));
+//            echo $form->textArea($model,'comment_three',array('class'=> 'input_comment','placeholder'=>'Comment'));
+//          }
 
-		      echo $form->error($model,'comment_one'); ?></br>
+//		      echo $form->error($model,'comment_one'); ?><!--</br>-->
     <p style="text-align: center;">
       <?php if((Yii::app()->user->getState('roles') =='admin'||(Yii::app()->user->id ==$model->approve_id))){
         $this->widget('bootstrap.widgets.TbButton', array(
