@@ -118,19 +118,19 @@
 
                             <div class="module  deepest">
                                 <ul class="bottom_left">
-                                    <li class="databases">
-                                        <a title="" target="_blank" href="http://www.hcmutrans.edu.vn/" class="mootip">
-                                            <strong style="float: left">Ho Chi Minh City University of Transport</strong>
-                                        </a>
-                                    </li>
-                                    <li class="messages">
-                                        <a title="" target="_blank" href="http://www.hcmutrans.edu.vn/khoa/cntt/Web/index.php" class="mootip">
-                                            <strong style="float: left">IT science</strong>
-                                        </a>
-                                    </li>
+<!--                                    <li class="databases">-->
+<!--                                        <a title="" target="_blank" href="http://www.hcmutrans.edu.vn/" class="mootip">-->
+<!--                                            <strong style="float: left">Ho Chi Minh City University of Transport</strong>-->
+<!--                                        </a>-->
+<!--                                    </li>-->
+<!--                                    <li class="messages">-->
+<!--                                        <a title="" target="_blank" href="http://www.hcmutrans.edu.vn/khoa/cntt/Web/index.php" class="mootip">-->
+<!--                                            <strong style="float: left">IT science</strong>-->
+<!--                                        </a>-->
+<!--                                    </li>-->
                                     <li class="options">
-                                        <a title="" target="_blank" href="http://www.facebook.com/groups/CN11LT.dhgtvt/" class="mootip">
-                                            <strong style="float: left">CN11LT</strong>
+                                        <a title="" target="_blank" href="https://www.facebook.com/outsprin" class="mootip">
+                                            <strong style="float: left">Outsprin Company</strong>
                                         </a>
                                     </li>
                                 </ul>
@@ -144,14 +144,14 @@
                                             <strong>EMS</strong>
                                         </a>
                                     </li>
-                                    <li class="right_info">
-                                        Graduate Project
-                                    </li>
+<!--                                    <li class="right_info">-->
+<!--                                        Graduate Project-->
+<!--                                    </li>-->
                                     <li class="right_info">
                                         Employee Management System
                                     </li>
                                     <li class="right_info">
-                                        version: v1.5
+                                        version: v1.0
                                     </li>
                                 </ul>
                             </div>

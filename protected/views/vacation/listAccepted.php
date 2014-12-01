@@ -29,7 +29,7 @@
 		*/
 		array(
 					'class'=>'CButtonColumn',
-					'template'=>'{update} {view}',
+					'template'=>'{update} {view} {delete}',
 					'header'=>'Actions',
 					'buttons'=>array(
 									'update' => array(    									   
@@ -40,7 +40,11 @@
 			                            'imageUrl'=>Yii::app()->request->baseUrl.'/images/view.png',
 			                            'url'=>'Yii::app()->createUrl("vacation/view",array("id"=>$data->id))',
 			                        ),
-	                ),
+                              'delete' => array(
+                                'imageUrl'=>Yii::app()->request->baseUrl.'/images/delete.png',
+                                'url'=>'Yii::app()->createUrl("vacation/delete",array("id"=>$data->id))',
+                              ),
+                                    ),
 					'htmlOptions'=>array('width'=>100,'align'=>'center'),
 	         ),
 	),

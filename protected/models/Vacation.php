@@ -1075,11 +1075,12 @@ class Vacation extends CActiveRecord
 
     $vacation = Yii::app()->db->createCommand(
                 'SELECT sum(total) as total_day_off
-                 FROM `Vacation`
+                 FROM `vacation`
                 WHERE (flag =0) AND  (status = 7) AND(medical_certificate = '."$medical".')AND (user_id ='."$user_id".')
-                AND type ='."$type"
+                 AND type ='."$type"
                 )
                 ->queryRow();
+//                AND vacation.type ='."$type".' AND DATE_FORMAT(employee_vacation.year,"%Y") = YEAR(CURDATE()) AND vacation.user_id = employee_vacation.employee_id'
 
     return $vacation;
   }

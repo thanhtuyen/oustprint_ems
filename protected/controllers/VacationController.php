@@ -28,7 +28,7 @@ class VacationController extends Controller
 	{
 		if( Yii::app()->user->getState('roles') =="admin" || Yii::app()->user->getState('roles') =="leader" ||Yii::app()->user->getState('roles') =="manager"  ) {
 	    
-	         $arr =array('index','create', 'update', 'view', 'admin', 'total', 'withdraw', 'accepted','request',
+	         $arr =array('index','create', 'update', 'view','delete', 'admin', 'total', 'withdraw', 'accepted','request',
              'cancel', 'detail', 'decline', 'excel', 'excelAll', 'excelWaiting', 'excelRequestCancel', 'excelAccepted', 'excelDecline', 'addEmployeeVacation');   /* give all access to admin */
 	    }
 //    elseif( Yii::app()->user->getState('roles') =="manager" ) {
@@ -194,10 +194,12 @@ class VacationController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		$this->loadModel($id)->delete();
-
+		$this->loadModel($id);
+    $model->del_flag = 1;
+    $model->save();
 		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		if(!isset($_GET['ajax']))
+      app()->user->setFlash('success', 'xóa thông tin  thành công !');
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
@@ -465,7 +467,6 @@ class VacationController extends Controller
       $total_vacation = $total - $limit;
     }
     if($model->id){
-
       $employee_vacation = new EmployeeVacation;
       $employee_vacation->total_day_off = abs($total_vacation);
       $employee_vacation_old = EmployeeVacation::getEmployeeByMaxId($model->user_id);
